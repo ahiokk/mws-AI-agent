@@ -10,6 +10,40 @@ class RecommendationRequest:
     budget_priority: str = 'balanced'       # Насколько важна дешивизна
     max_recommendations: int = 3            # Сколько моделей хотим вернуть
 
+
+    def __post_init__(self) -> None:
+        '''
+        Встроенный механизм dataclass. Он автоматически вызывается
+        после __init__, и держит всю логику валидности объекта
+        рядом с самим объектом. Ошибка возникнет сращу в момент 
+        создания объекта, а не всплывет где то потом.
+        '''
+        allowed_use_cases = {'chat', 'coding', 'analysis', 'embedding'}
+        allowed_quality_priorities = {'low', 'medium', 'high'}
+        allowed_budget_priorities = {'low', 'balanced', 'high'}
+
+        # Проверяем, что use_case в доступном сценарии
+        if self.use_case not in allowed_use_cases:
+            raise ValueError(
+                f'Unsupported use_case: {self.use_cases}'
+                f'Expected one of {sorted(allowed_use_cases)}'
+            )
+        
+        # Проверяем, что приоритет бюджета задан корректно
+        if self.quality_priority not in allowed_quality_priorities:
+            raise ValueError(
+                f'Unsupported quality_priotity: {self.quality_priority}'
+                f'Expected one of {sorted(allowed_quality_priorities)}'
+            )
+        # Минимальный контекст не может быть отрицательным
+        if self.min_context_k_tokens is not None and self.min_context_k_tokens <= 0:
+            raise ValueError('min_context_k_tokens must be > 0')
+        
+        # Количество рекомендаций тоже не может быть отрицательным
+        if self.max_recommendations <= 0:
+            raise ValueError('max_recommendations must be > 0')
+        
+
 # Проверяем, эмбеддер это, или нет.
 def is_embedding_model(model: dict) -> bool:
     return model['output_modality'] == 'Embedding'
@@ -24,25 +58,27 @@ def is_coding_model(model: dict) -> bool:
 
 
 def is_model_compatible(model: dict, request: RecommendationRequest) -> bool:
-    # Если юзеру нужен эмбеддер - подходят только эмбеддеры
-    if request.use_case == 'embedding':
-        if not is_embedding_model(model):
-            return False
-    # Обратная логика  (если кейс не embedding, то эмбеддеры не нужны)
-    else:
-        if is_embedding_model(model):
-            return True
-    # Если юзеру нужна работа с изображениями, исключаем тех, у кого нет Image
+    # embedding-сценарий: подходят только embedding-модели
+    if request.use_case == "embedding" and not is_embedding_model(model):
+        return False
+
+    # все остальные сценарии: embedding-модели исключаем
+    if request.use_case != "embedding" and is_embedding_model(model):
+        return False
+
+    # если нужны входные изображения, модель обязана их поддерживать
     if request.needs_image_inputs and not supports_image_input(model):
         return False
-    # Если юзер явно требует мин. котекст, а модель не тянет => не подходит
+
+    # если задан минимальный контекст, модель должна ему соответствовать
     if (
         request.min_context_k_tokens is not None
-        and model['context_k_tokens'] < request.min_context_k_tokens
+        and model["context_k_tokens"] < request.min_context_k_tokens
     ):
         return False
-    # Ничего не нарушено => модель совместима
+
     return True
+
 
 # Вспомогательная метрика для recommendation
 def get_effective_total_price_per_1k(model: dict, price_mode: str = 'base') -> Decimal | None:
@@ -172,22 +208,36 @@ def score_by_quality(model: dict, request: RecommendationRequest) -> float:
     return 0.0
 
  
+
+def get_budget_weight(request: RecommendationRequest) -> float:
+    # Если бюджет почти не важен, влияние цены должно быть слабым
+    if request.budget_priority == 'low':
+        return 0.7
+    
+    # Сбалансированный режим. Цена важна, но не доминирует
+    if request.budget_priority == 'balanced':
+        return 1.5
+    # Если бюджет очень важен, цена должна сильнее влиять на ранжирование
+    if request.budget_priority == 'high':
+        return 3.0
+
+
 def score_model(
         model: dict,
         request: RecommendationRequest,
-        price_scores: dict[str,float],
+        price_scores: dict[str, float],
  ) -> float:
     '''
     Это функция, которая отвечает на вопрос:
-    “какой общий вес получает модель после учета всех факторов?
-    
+    “какой общий вес получает модель после учета всех факторов?”
+
     Объединяем все веса
     '''
     score = 0.0
 
-    score += score_by_use_case(model,request)           # 1. Добавляем score по use case
-    score += score_by_quality(model, request)           # 2. Добавляем quality score
-    score += price_scores.get(model['name'], 0.0) * 2.0 # 3. Добавляем price score
+    score += score_by_use_case(model, request)                 # 1. Добавляем score по use case
+    score += score_by_quality(model, request)                  # 2. Добавляем quality score
+    score += price_scores.get(model['name'], 0.5) * get_budget_weight(request)  # 3. Добавляем price score
     # 4. Бонус за image support
     if request.needs_image_inputs and supports_image_input(model):
         score += 2.0
@@ -196,9 +246,10 @@ def score_model(
         request.min_context_k_tokens is not None
         and model['context_k_tokens'] >= request.min_context_k_tokens
     ):
-        score += 1
+        score += 1.0
 
     return score
+
 
 
 def recommend_models(
@@ -235,7 +286,7 @@ def recommend_models(
     return recommendations
 
 
-def build_reasons(model: dict, request: RecommendationRequest):
+def build_reasons(model: dict, request: RecommendationRequest) -> list[str]:
     '''
     Рекомендация должна быть объяснимой, для этого эта функция.
     Понятные формулировки, которые потом можно показывать в отчете.
@@ -245,25 +296,30 @@ def build_reasons(model: dict, request: RecommendationRequest):
     # если пользователь просил coding
     # и модель coding-ориентированная
     # это хорошая причина упомянуть
-    if request.use_cse == 'coding' and is_coding_model(model):
+    if request.use_case == 'coding' and is_coding_model(model):
         reasons.append('Ориентирована на задачи генерации и анализа кода')
+
     # пользователь хочет embedding-задачу
     # модель реально подходит по типу выхода
     if request.use_case == 'embedding' and is_embedding_model(model):
         reasons.append('Возвращает embedding, а не текстовый ответ')
+
     # пользовательский сценарий требует картинки
     # значит это не просто приятный бонус, а реальное основание для выбора
     if request.needs_image_inputs and supports_image_input(model):
         reasons.append('Поддерживает входные изображения')
+
     # большой контекст часто реально полезен
     # это хороший и понятный плюс
     if model['context_k_tokens'] >= 128:
-        reasons.append(f'имеет большой контекст {model['context_k_tokens']}k токенов')
+        reasons.append(f"Имеет большой контекст: {model['context_k_tokens']}k токенов")
+
     # если пользователь говорит, что качество важно
     # и модель крупная
     # можно это упомянуть как дополнительное основание
-    if request.quality_priority in {'medium', 'high'} and model ['size_b_params'] >= 70:
+    if request.quality_priority in {'medium', 'high'} and model['size_b_params'] >= 70:
         reasons.append('Выглядит сильной по размеру модели для приоритета на качество')
+
     # чтобы не вернуть пустой список причин
     # иначе отчет получится сухим и неполным
     if not reasons:

@@ -1,5 +1,8 @@
 import asyncio
 import logging
+import re
+
+from datetime import date
 from decimal import Decimal
 
 import httpx
@@ -25,6 +28,26 @@ PRICING_REQUIRED_HEADERS = {
     "Модель",
     "Отпускная единица, в токенах",
 }
+
+RUSSIAN_MONTHS = {
+    "января": 1,
+    "февраля": 2,
+    "марта": 3,
+    "апреля": 4,
+    "мая": 5,
+    "июня": 6,
+    "июля": 7,
+    "августа": 8,
+    "сентября": 9,
+    "октября": 10,
+    "ноября": 11,
+    "декабря": 12,
+}
+# шаблон поиска даты начало и конца акций
+PROMO_PERIOD_RE = re.compile(
+    r"в период акции с (\d{1,2}) ([а-я]+) по (\d{1,2}) ([а-я]+)",
+    re.IGNORECASE,
+)
 
 
 async def fetch_html(client: httpx.AsyncClient, url: str) -> str:
@@ -145,14 +168,79 @@ def find_column_name(
     raise ValueError(f"Колонка не найдена: {include_text}")
 
 
-def normalize_model_row(row: dict) -> dict:
+def find_optional_column_name(
+        row: dict,
+        include_text: str,
+        exclude_text: str | None = None,
+) -> str | None:
+    for column_name in row:
+        if include_text not in column_name:
+            continue
+        if exclude_text and exclude_text in column_name:
+            return column_name
+        
+    return None
+
+
+def parse_promo_period(
+        column_name: str | None,
+        reference_date: date | None = None,
+) -> tuple[date | None, date | None]:
+    if not column_name:
+        return None, None
+    
+    match = PROMO_PERIOD_RE.search(column_name)
+    if not match:
+        return None, None
+    
+    reference_date = reference_date or date.today()
+    start_day = int(match.group(1))
+    start_month = RUSSIAN_MONTHS[match.group(2).lower]
+    end_day = int(match.group(3))
+    end_month = RUSSIAN_MONTHS[match.group(4).lower()]
+
+    start_year = reference_date.year
+    end_year = reference_date.year if end_month >= start_month else reference_date.year + 1
+
+    promo_start = date(start_year, start_month, start_year)
+    promo_end = date(end_year, end_month, end_day)
+
+    return promo_start, promo_end
+
+
+def normalize_pricing_row(row: dict) -> dict:
+    promo_input_column = find_optional_column_name(
+        row,
+        "Цена за 1000 входящих токенов, с НДС 22% в период акции",
+    )
+    promo_output_column = find_optional_column_name(
+        row,
+        "Цена за 1000 исходящих токенов, с НДС 22% в период акции",
+    )
+    base_input_column = find_column_name(
+        row,
+        "Цена за 1000 входящих токенов, с НДС 22%",
+        exclude_text="в период акции",
+    )
+    base_output_column = find_column_name(
+        row,
+        "Цена за 1000 исходящих токенов, с НДС 22%",
+        exclude_text="в период акции",
+    )
+
+    promo_period_source = promo_input_column or promo_output_column
+    promo_start_date, promo_end_date = parse_promo_period(promo_period_source)
+
+
     return {
-        "name": row["Параметр"],
-        "developer": row["Разработчик"],
-        "input_modalities": parse_modalities(row["Формат ввода"]),
-        "output_modality": row["Формат вывода"],
-        "context_k_tokens": parse_int(row["Контекст, в тысячах токенов"]),
-        "size_b_params": parse_float(row["Размер модели, в млрд. параметров"]),
+        "name": row["Модель"],
+        "promo_input_price_per_1k": parse_price(row[promo_input_column]) if promo_input_column else None,
+        "promo_output_price_per_1k": parse_price(row[promo_output_column]) if promo_output_column else None,
+        "promo_start_date": promo_start_date,
+        "promo_end_date": promo_end_date,
+        "base_input_price_per_1k": parse_price(row[base_input_column]),
+        "base_output_price_per_1k": parse_price(row[base_output_column]),
+        "billing_unit_tokens": parse_int(row['Отпускная единица, в токенах']),
     }
 
 
