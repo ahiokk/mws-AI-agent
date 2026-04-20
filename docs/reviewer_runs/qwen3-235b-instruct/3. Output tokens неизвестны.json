@@ -1,0 +1,409 @@
+{
+  "id": "513b1725-5c28-42eb-b435-153065b499eb",
+  "appName": "mws_adk_app",
+  "userId": "user",
+  "state": {
+    "__session_metadata__": {
+      "displayName": "Нужен генератор юридических документов\n2000 зап..."
+    }
+  },
+  "events": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Нужен генератор юридических документов\n2000 запросов в день\n3500 токенов на вход\nбюджет 250000 рублей в месяц"
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-3d25b118-6bf4-4a8a-b92d-372427842953",
+      "author": "user",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "c35ccca2-76e4-4e6e-9fa4-2d74c7c370d5",
+      "timestamp": 1776712958.2141094
+    },
+    {
+      "modelVersion": "qwen3-235b-instruct",
+      "content": {
+        "parts": [
+          {
+            "text": "Я — ассистент по выбору и оценке стоимости моделей в MWS GPT Model Hub. Помогу подобрать подходящую модель для генерации юридических документов.\n\nУ вас уже есть:\n- 2000 запросов в день\n- 3500 токенов на вход в среднем\n- бюджет 250 000 ₽ в месяц\n\nНе хватает данных о **среднем количестве выходных токенов на запрос** (объём генерации). Для юридических документов он может быть значительным.\n\nПожалуйста, уточните:\n- Сколько в среднем токенов вы ожидаете на выходе (в ответах)?  \n  Например: 1000, 2000 или около того?\n\nЕсли не знаете — предложу разумное предположение (например, 70% от входа — 2450 токенов) и уточню, подходит ли оно."
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "finishReason": "STOP",
+      "usageMetadata": {
+        "cachedContentTokenCount": 0,
+        "candidatesTokenCount": 246,
+        "promptTokenCount": 1271,
+        "totalTokenCount": 1517
+      },
+      "invocationId": "e-3d25b118-6bf4-4a8a-b92d-372427842953",
+      "author": "mws_selection_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "58c3ad51-cd3e-4e29-9af0-d86479a3989a",
+      "timestamp": 1776712965.6808784
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "output не знаю"
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-e4c54f4c-ed93-43bb-a30d-414d63cab465",
+      "author": "user",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "e382b08e-7a45-4a39-b762-b301bd054b46",
+      "timestamp": 1776712980.3939428
+    },
+    {
+      "modelVersion": "qwen3-235b-instruct",
+      "content": {
+        "parts": [
+          {
+            "text": "Принято, выходные токены неизвестны.\n\nПредположим, что среднее количество выходных токенов — **70% от входных**, то есть 3500 × 0.7 ≈ **2450 токенов на выход**. Это разумная оценка для генерации юридических документов средней длины.\n\nИспользуем это предположение, если согласны — напишите: **\"ок\"** или **\"подходит\"**.  \nЕсли хотите другое соотношение — уточните."
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "finishReason": "STOP",
+      "usageMetadata": {
+        "cachedContentTokenCount": 0,
+        "candidatesTokenCount": 140,
+        "promptTokenCount": 1529,
+        "totalTokenCount": 1669
+      },
+      "invocationId": "e-e4c54f4c-ed93-43bb-a30d-414d63cab465",
+      "author": "mws_selection_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "5b0c3441-1735-4bad-b04f-5f9db16823c0",
+      "timestamp": 1776712984.5799112
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Давай считать output как 50 процентов от input"
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-8aecca28-83a0-4c19-bab6-b5cff3ecc0b5",
+      "author": "user",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "407686ab-4278-4990-b099-f95b4e3f452e",
+      "timestamp": 1776712992.3448553
+    },
+    {
+      "modelVersion": "qwen3-235b-instruct",
+      "content": {
+        "parts": [
+          {
+            "text": "Принято: будем считать, что среднее количество выходных токенов = 50% от входных → 3500 × 0.5 = **1750 токенов на выход**.\n\nПодтверждаю:\n- Используемое предполечение: output = 50% от input\n- Пользователь подтвердил подходящим ответом\n\nВыполняю расчёт с подтверждённым предположением.\n"
+          },
+          {
+            "functionCall": {
+              "id": "chatcmpl-tool-546ddb1cda8845ab9e00b4d55e001722",
+              "args": {
+                "use_case": "chat",
+                "requests_per_day": 2000,
+                "avg_input_tokens_per_request": 3500,
+                "avg_output_tokens_per_request": 1750,
+                "budget_rub": "250000",
+                "output_tokens_source": "assumption",
+                "output_tokens_assumption_confirmed": true,
+                "quality_priority": "high",
+                "budget_priority": "balanced",
+                "period_days": 30
+              },
+              "name": "run_mws_assistant"
+            }
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "finishReason": "STOP",
+      "usageMetadata": {
+        "cachedContentTokenCount": 0,
+        "candidatesTokenCount": 222,
+        "promptTokenCount": 1692,
+        "totalTokenCount": 1914
+      },
+      "invocationId": "e-8aecca28-83a0-4c19-bab6-b5cff3ecc0b5",
+      "author": "mws_selection_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "longRunningToolIds": [],
+      "id": "d21477e9-abb1-4958-a0c0-0f6c308e9102",
+      "timestamp": 1776712995.5864146
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "functionResponse": {
+              "id": "chatcmpl-tool-546ddb1cda8845ab9e00b4d55e001722",
+              "name": "run_mws_assistant",
+              "response": {
+                "input_data": {
+                  "use_case": "chat",
+                  "needs_image_input": false,
+                  "min_context_k_tokens": null,
+                  "quality_priority": "high",
+                  "budget_priority": "balanced",
+                  "max_recommendations": 3,
+                  "avg_input_tokens_per_request": 3500,
+                  "avg_output_tokens_per_request": 1750,
+                  "requests_per_day": 2000,
+                  "period_days": 30,
+                  "budget_rub": "250000",
+                  "requested_price_mode": "auto"
+                },
+                "recommended_models": [
+                  {
+                    "name": "qwen3-235b-instruct",
+                    "developer": "QWEN",
+                    "input_modalities": [
+                      "Text"
+                    ],
+                    "output_modality": "Text",
+                    "context_k_tokens": 256,
+                    "size_b_params": 235,
+                    "score": 7.428571428571429,
+                    "reasons": [
+                      "Имеет большой контекст: 256k токенов",
+                      "Выглядит сильной по размеру модели для приоритета на качество"
+                    ]
+                  },
+                  {
+                    "name": "qwen3-coder-480b-a35b",
+                    "developer": "QWEN",
+                    "input_modalities": [
+                      "Text"
+                    ],
+                    "output_modality": "Text",
+                    "context_k_tokens": 256,
+                    "size_b_params": 480,
+                    "score": 6.928571428571429,
+                    "reasons": [
+                      "Имеет большой контекст: 256k токенов",
+                      "Выглядит сильной по размеру модели для приоритета на качество"
+                    ]
+                  },
+                  {
+                    "name": "glm-4.6-357b",
+                    "developer": "Z.ai",
+                    "input_modalities": [
+                      "Text"
+                    ],
+                    "output_modality": "Text",
+                    "context_k_tokens": 200,
+                    "size_b_params": 357,
+                    "score": 6.785714285714286,
+                    "reasons": [
+                      "Имеет большой контекст: 200k токенов",
+                      "Выглядит сильной по размеру модели для приоритета на качество"
+                    ]
+                  }
+                ],
+                "calculations": [
+                  {
+                    "model_name": "qwen3-235b-instruct",
+                    "requested_price_mode": "auto",
+                    "effective_price_mode": "promo",
+                    "promo_active": true,
+                    "billing_unit_tokens": 100,
+                    "estimated_input_tokens": 210000000,
+                    "estimated_output_tokens": 105000000,
+                    "billed_input_tokens": 210000000,
+                    "billed_output_tokens": 105000000,
+                    "input_cost_rub": "12810.000",
+                    "output_cost_rub": "25620.000",
+                    "total_cost_rub": "38430.000",
+                    "fit_budget": true,
+                    "expired_input_tokens": 0,
+                    "expired_output_tokens": 0,
+                    "ending_input_carryover_tokens": 0,
+                    "ending_output_carryover_tokens": 0
+                  },
+                  {
+                    "model_name": "qwen3-coder-480b-a35b",
+                    "requested_price_mode": "auto",
+                    "effective_price_mode": "promo",
+                    "promo_active": true,
+                    "billing_unit_tokens": 100,
+                    "estimated_input_tokens": 210000000,
+                    "estimated_output_tokens": 105000000,
+                    "billed_input_tokens": 210000000,
+                    "billed_output_tokens": 105000000,
+                    "input_cost_rub": "21630.000",
+                    "output_cost_rub": "43470.000",
+                    "total_cost_rub": "65100.000",
+                    "fit_budget": true,
+                    "expired_input_tokens": 0,
+                    "expired_output_tokens": 0,
+                    "ending_input_carryover_tokens": 0,
+                    "ending_output_carryover_tokens": 0
+                  },
+                  {
+                    "model_name": "glm-4.6-357b",
+                    "requested_price_mode": "auto",
+                    "effective_price_mode": "promo",
+                    "promo_active": true,
+                    "billing_unit_tokens": 100,
+                    "estimated_input_tokens": 210000000,
+                    "estimated_output_tokens": 105000000,
+                    "billed_input_tokens": 210000000,
+                    "billed_output_tokens": 105000000,
+                    "input_cost_rub": "24150.000",
+                    "output_cost_rub": "48615.000",
+                    "total_cost_rub": "72765.000",
+                    "fit_budget": true,
+                    "expired_input_tokens": 0,
+                    "expired_output_tokens": 0,
+                    "ending_input_carryover_tokens": 0,
+                    "ending_output_carryover_tokens": 0
+                  }
+                ],
+                "limitations": [
+                  "Модели и цены загружаются из публичной документации MWS на момент расчета.",
+                  "Оценка стоимости является приблизительной и зависит от средних токенов на запрос и числа запросов в день.",
+                  "Правило 24 часов моделируется на уровне дневной агрегации: остаток токенов переносится только на следующий день.",
+                  "Фактический биллинг может отличаться при неравномерном распределении запросов внутри суток.",
+                  "Для части моделей применены акционные цены, если акция была активна на дату расчета."
+                ]
+              }
+            }
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-8aecca28-83a0-4c19-bab6-b5cff3ecc0b5",
+      "author": "mws_selection_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "4538e293-ec79-4f10-a09b-aef1c946ed7b",
+      "timestamp": 1776712998.8759966
+    },
+    {
+      "modelVersion": "qwen3-235b-instruct",
+      "content": {
+        "parts": [
+          {
+            "text": "### Результат подбора модели для генерации юридических документов\n\n**Ваши параметры:**\n- **Запросов в день:** 2000  \n- **Средний ввод:** 3500 токенов  \n- **Средний вывод:** 1750 токенов (50% от ввода — ваше согласие)  \n- **Период:** 30 дней → **60 000 запросов в месяц**  \n- **Общий трафик:**  \n  - Ввод: 210 млн токенов/мес  \n  - Вывод: 105 млн токенов/мес  \n- **Бюджет:** 250 000 ₽/мес  \n\n---\n\n### 🏆 Рекомендованные модели (в порядке приоритета)\n\n| Модель | Ввод ₽ | Вывод ₽ | **Итого ₽/мес** | Помещается в бюджет? |\n|-------|--------|--------|----------------|----------------------|\n| **qwen3-235b-instruct** (QWEN) | 12 810 | 25 620 | **38 430** | ✅ Да |\n| **qwen3-coder-480b-a35b** (QWEN) | 21 630 | 43 470 | **65 100** | ✅ Да |\n| **glm-4.6-357b** (Z.ai) | 24 150 | 48 615 | **72 765** | ✅ Да |\n\n---\n\n### 🔍 Ключевые характеристики моделей:\n1. **qwen3-235b-instruct**  \n   - **Контекст:** 256k токенов  \n   - **Лучший баланс качества и цены**  \n   - **Самая экономичная** из сильных моделей  \n   - Подходит для сложных юридических текстов\n\n2. **qwen3-coder-480b-a35b**  \n   - Крупнее по размеру (480 млрд параметров)  \n   - Также 256k контекста  \n   - Выше стоимость, но потенциально выше точность\n\n3. **glm-4.6-357b**  \n   - 357 млрд параметров, 200k контекста  \n   - Немного дороже, но мощная альтернатива\n\n---\n\n### 💡 Вывод:\n**Все три модели укладываются в ваш бюджет (250 000 ₽)**, при этом **qwen3-235b-instruct** — **наиболее выгодный выбор** по соотношению цена/качество. Она покроет все потребности и оставит большой запас по бюджету.\n\n---\n\n### ⚠️ Ограничения оценки:\n- Цены актуальны на дату последнего обновления данных MWS.\n- Использованы промо-тарифы (если доступны).\n- Остатки токенов переносятся по правилу 24 часов.\n\nЕсли планируете масштабироваться или добавить обработку изображений/файлов — могу пересчитать. Готов помочь с интеграцией или тестированием."
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "finishReason": "STOP",
+      "usageMetadata": {
+        "cachedContentTokenCount": 0,
+        "candidatesTokenCount": 816,
+        "promptTokenCount": 3213,
+        "totalTokenCount": 4029
+      },
+      "invocationId": "e-8aecca28-83a0-4c19-bab6-b5cff3ecc0b5",
+      "author": "mws_selection_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "d352e1b3-a589-4b48-8059-a682e2e47bf7",
+      "timestamp": 1776713021.7686412
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Да, подходитДа, подходит"
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-468b5b74-f3f8-4bfe-a9b7-d972f0b6a349",
+      "author": "user",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "210dcc9d-d0e3-4a2f-9098-d09bb857dcbb",
+      "timestamp": 1776713117.0453448
+    },
+    {
+      "modelVersion": "qwen3-235b-instruct",
+      "content": {
+        "parts": [
+          {
+            "text": "Отлично! Рад, что рекомендация подходит.\n\n**Итоговый выбор:**  \n✅ **Модель:** `qwen3-235b-instruct`  \n✅ **Стоимость:** **38 430 ₽/мес** (всего 15% от вашего бюджета)  \n✅ **Запас бюджета:** 211 570 ₽ — можно использовать для масштабирования, тестирования других моделей или резерва.\n\n---\n\n### Что дальше?\n- Готов помочь с:\n  - Настройкой API\n  - Примерами запросов для юридических документов\n  - Оптимизацией промптов\n  - Мониторингом расходов\n\nНапишите, когда будете готовы к интеграции — подскажу пошагово."
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "finishReason": "STOP",
+      "usageMetadata": {
+        "cachedContentTokenCount": 0,
+        "candidatesTokenCount": 202,
+        "promptTokenCount": 4048,
+        "totalTokenCount": 4250
+      },
+      "invocationId": "e-468b5b74-f3f8-4bfe-a9b7-d972f0b6a349",
+      "author": "mws_selection_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "7028f2e7-517c-4544-bdf6-84815b83f27d",
+      "timestamp": 1776713123.4819274
+    }
+  ],
+  "lastUpdateTime": 1776713123.4819274
+}

@@ -176,7 +176,7 @@ def estimate_model_cost(model: dict, scenario: UsageScenario) -> dict:
         'billed_output_tokens': billed_output_tokens,
         'input_cost_rub': input_cost,
         'output_cost_rub': output_cost,
-        'total_cost_rub': total_cost,       
+        'total_cost_rub': total_cost,
         'requested_price_mode': scenario.price_mode,
         'effective_price_mode': effective_price_mode,
         'promo_active': is_promo_active(model),

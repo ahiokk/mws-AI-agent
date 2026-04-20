@@ -1,0 +1,218 @@
+{
+  "id": "9ce63229-63e0-47bb-8f9b-30c28be00816",
+  "appName": "mws_adk_app",
+  "userId": "user",
+  "state": {
+    "__session_metadata__": {
+      "displayName": "Подбери недорогую модель для эмбеддингов докуме..."
+    }
+  },
+  "events": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Подбери недорогую модель для эмбеддингов документов\n50000 запросов в день\nв среднем 800 токенов на входе\nбюджет 30000 рублей в месяц"
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-65170783-f95f-4243-8223-669d42749a56",
+      "author": "user",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "5d6dceed-3d91-4a01-a51e-5b188854d7a9",
+      "timestamp": 1776712814.0209827
+    },
+    {
+      "modelVersion": "qwen3-235b-instruct",
+      "content": {
+        "parts": [
+          {
+            "functionCall": {
+              "id": "chatcmpl-tool-6f1d5a7304df4a1d8da611e9362744f2",
+              "args": {
+                "use_case": "embedding",
+                "requests_per_day": 50000,
+                "avg_input_tokens_per_request": 800,
+                "budget_rub": "30000",
+                "period_days": 30
+              },
+              "name": "run_mws_assistant"
+            }
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "finishReason": "STOP",
+      "usageMetadata": {
+        "cachedContentTokenCount": 0,
+        "candidatesTokenCount": 68,
+        "promptTokenCount": 1279,
+        "totalTokenCount": 1347
+      },
+      "invocationId": "e-65170783-f95f-4243-8223-669d42749a56",
+      "author": "mws_selection_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "longRunningToolIds": [],
+      "id": "ffae2e91-db4e-4a8a-877a-1fac7eb95d2d",
+      "timestamp": 1776712814.0295947
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "functionResponse": {
+              "id": "chatcmpl-tool-6f1d5a7304df4a1d8da611e9362744f2",
+              "name": "run_mws_assistant",
+              "response": {
+                "input_data": {
+                  "use_case": "embedding",
+                  "needs_image_input": false,
+                  "min_context_k_tokens": null,
+                  "quality_priority": "medium",
+                  "budget_priority": "balanced",
+                  "max_recommendations": 3,
+                  "avg_input_tokens_per_request": 800,
+                  "avg_output_tokens_per_request": 0,
+                  "requests_per_day": 50000,
+                  "period_days": 30,
+                  "budget_rub": "30000",
+                  "requested_price_mode": "auto"
+                },
+                "recommended_models": [
+                  {
+                    "name": "bge-m3",
+                    "developer": "BAAI",
+                    "input_modalities": [
+                      "Text"
+                    ],
+                    "output_modality": "Embedding",
+                    "context_k_tokens": 8,
+                    "size_b_params": 0.6,
+                    "score": 6,
+                    "reasons": [
+                      "Возвращает embedding, а не текстовый ответ"
+                    ]
+                  },
+                  {
+                    "name": "bge-multilingual-gemma2",
+                    "developer": "BAAI",
+                    "input_modalities": [
+                      "Text"
+                    ],
+                    "output_modality": "Embedding",
+                    "context_k_tokens": 8,
+                    "size_b_params": 9,
+                    "score": 4.5,
+                    "reasons": [
+                      "Возвращает embedding, а не текстовый ответ"
+                    ]
+                  }
+                ],
+                "calculations": [
+                  {
+                    "model_name": "bge-m3",
+                    "requested_price_mode": "auto",
+                    "effective_price_mode": "promo",
+                    "promo_active": true,
+                    "billing_unit_tokens": 1000,
+                    "estimated_input_tokens": 1200000000,
+                    "estimated_output_tokens": 0,
+                    "billed_input_tokens": 1200000000,
+                    "billed_output_tokens": 0,
+                    "input_cost_rub": "720.0000",
+                    "output_cost_rub": "0",
+                    "total_cost_rub": "720.0000",
+                    "fit_budget": true,
+                    "expired_input_tokens": 0,
+                    "expired_output_tokens": 0,
+                    "ending_input_carryover_tokens": 0,
+                    "ending_output_carryover_tokens": 0
+                  },
+                  {
+                    "model_name": "bge-multilingual-gemma2",
+                    "requested_price_mode": "auto",
+                    "effective_price_mode": "promo",
+                    "promo_active": true,
+                    "billing_unit_tokens": 1000,
+                    "estimated_input_tokens": 1200000000,
+                    "estimated_output_tokens": 0,
+                    "billed_input_tokens": 1200000000,
+                    "billed_output_tokens": 0,
+                    "input_cost_rub": "2160.0000",
+                    "output_cost_rub": "0",
+                    "total_cost_rub": "2160.0000",
+                    "fit_budget": true,
+                    "expired_input_tokens": 0,
+                    "expired_output_tokens": 0,
+                    "ending_input_carryover_tokens": 0,
+                    "ending_output_carryover_tokens": 0
+                  }
+                ],
+                "limitations": [
+                  "Модели и цены загружаются из публичной документации MWS на момент расчета.",
+                  "Оценка стоимости является приблизительной и зависит от средних токенов на запрос и числа запросов в день.",
+                  "Правило 24 часов моделируется на уровне дневной агрегации: остаток токенов переносится только на следующий день.",
+                  "Фактический биллинг может отличаться при неравномерном распределении запросов внутри суток.",
+                  "Для части моделей применены акционные цены, если акция была активна на дату расчета."
+                ]
+              }
+            }
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-65170783-f95f-4243-8223-669d42749a56",
+      "author": "mws_selection_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "26cd1904-1973-46df-a912-70c2b312df62",
+      "timestamp": 1776712817.9706502
+    },
+    {
+      "modelVersion": "qwen3-235b-instruct",
+      "content": {
+        "parts": [
+          {
+            "text": "На основе ваших требований подобраны две модели для генерации эмбеддингов:\n\n### 🔹 Рекомендованные модели:\n1. **`bge-m3`** (разработчик: BAAI)  \n   - Контекст: 8K токенов  \n   - Размер: 0.6 млрд параметров  \n   - **Стоимость в месяц: 720 ₽**  \n   - Подходит под бюджет (до 30 000 ₽)  \n\n2. **`bge-multilingual-gemma2`** (разработчик: BAAI)  \n   - Контекст: 8K токенов  \n   - Размер: 9 млрд параметров  \n   - **Стоимость в месяц: 2 160 ₽**  \n   - Также укладывается в бюджет\n\n---\n\n### 📊 Расчёт:\n- **50 000 запросов/день × 30 дней = 1.5 млн запросов в месяц**\n- **800 токенов на вход × 1.5 млн = 1.2 млрд входных токенов**\n- Обе модели работают с текстом и возвращают эмбеддинги (не текст)\n- Использованы **промо-цены**, действующие на момент расчёта\n\n---\n\n### ✅ Вывод:\nОбе модели **значительно укладываются в ваш бюджет** (30 000 ₽/мес).  \n**Рекомендую `bge-m3`** — она дешевле, достаточно качественна и поддерживает мультиязычность.\n\nЕсли нужна более мощная модель для сложных текстов — можно рассмотреть `bge-multilingual-gemma2`, но разница в качестве может быть несущественной для большинства задач.\n\nХотите сравнить производительность этих моделей или проверить поддержку конкретных языков?"
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "finishReason": "STOP",
+      "usageMetadata": {
+        "cachedContentTokenCount": 0,
+        "candidatesTokenCount": 465,
+        "promptTokenCount": 2150,
+        "totalTokenCount": 2615
+      },
+      "invocationId": "e-65170783-f95f-4243-8223-669d42749a56",
+      "author": "mws_selection_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "42dba844-1684-4689-93d4-74bcb5d090a0",
+      "timestamp": 1776712831.0758338
+    }
+  ],
+  "lastUpdateTime": 1776712831.0758338
+}

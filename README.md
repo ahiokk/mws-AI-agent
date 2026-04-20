@@ -1,221 +1,140 @@
 # MWS GPT Model Selection Assistant
 
-Сервис-ассистент для подбора моделей из MWS GPT Model Hub под продуктовый кейс, нагрузку и бюджет
+Практическая работа для стажировки: ассистент, который помогает выбрать модель из **MWS GPT Model Hub** под конкретный сценарий, нагрузку и бюджет
 
-Проект использует:
-- динамический парсинг каталога и цен MWS
-- собственное deterministic ядро для recommendation и estimation
-- Google ADK как агентный слой
-- OpenAI-compatible API для внешнего доступа
+Проект специально сделан не как один большой prompt, а как связка:
+
+- **Google ADK** для диалога
+- **детерминированного Python-ядра** для подбора и расчета стоимости
+- **API в формате OpenAI** для внешнего доступа
+- **динамической загрузки каталога и цен MWS**
 
 ## Что умеет
 
-- загружать актуальные модели и цены с сайта MWS во время работы сервиса
-- рекомендовать подходящие модели под `chat`, `coding`, `analysis`, `embedding`
-- оценивать стоимость использования по пользовательскому сценарию
-- учитывать promo/base pricing
-- строить структурированный отчет из 4 блоков:
+- загружает актуальные модели и цены с сайта MWS во время работы сервиса
+- подбирает модели под `chat`, `coding`, `analysis`, `embedding`
+- оценивает стоимость с учетом базовых и акционных цен`
+- строит структурированный отчет из блоков:
   - `input_data`
   - `recommended_models`
   - `calculations`
   - `limitations`
-- работать как через ADK, так и через OpenAI-compatible HTTP API
-- отдавать обычный ответ и `stream=True`
-
-## ТЗ
-
-| Требование | Статус | Комментарий |
-| --- | --- | --- |
-| OpenAI-compatible API | Да | Реализованы `GET /v1/models`, `GET /health`, `POST /v1/chat/completions` |
-| Google ADK | Да | Ассистент построен на ADK agent + tool |
-| Dynamic pricing from MWS | Да | Каталог и цены динамически парсятся с сайта MWS |
-| Cost estimation | Да | Есть расчет стоимости с учетом promo/base и 24h billing approximation |
-| Structured report | Да | Отчет собирается в блоки `input_data`, `recommended_models`, `calculations`, `limitations` |
-| Dialog in session | Да | Поддерживается через ADK `SessionService` и `session_id` |
-| Tests | Да | Есть автотесты для estimation, recommendation и validation |
-| Observability | Да | Есть логирование, тайминги и простые счетчики |
-| Input validation | Да | Есть pydantic validation layer |
-| `stream=True` | Да | Реализован event-based SSE-ответ в OpenAI-compatible формате |
-
-## Выбранный архитектурный паттерн
-
-Использован паттерн `single root ADK agent + deterministic tool-backed core`
-
-Смысл такой:
-- агент отвечает за диалог, сбор недостающих вводных и вызов инструмента
-- бизнес-логика не прячется в prompt
-- recommendation, estimation, reporting и catalog parsing реализованы отдельными Python-модулями
-- tool в ADK только связывает диалоговый слой с ядром
-
-Это уменьшает вероятность галлюцинаций и делает систему объяснимой и тестируемой
+- поддерживает обычный ответ и `stream=True`
+- поддерживает продолжение диалога через `session_id` / `X-Session-Id`
 
 ## Архитектура
 
-Текстовая схема потока запроса
+Основной поток запроса:
 
-`Client -> OpenAI-compatible API -> ADK root agent -> tool run_mws_assistant -> coordinator -> catalog/recommendation/estimation/reporting -> API response`
+`Клиент -> API -> ADK agent -> run_mws_assistant() -> coordinator -> catalog / recommendation / estimation / reporting -> ответ`
 
 ![Архитектура сервиса](docs/architecture.png)
 
-Роли слоев:
-- `mws_assistant/mws_catalog.py` — загрузка и нормализация каталога моделей и прайсов MWS
-- `mws_assistant/recommendation.py` — фильтрация и ранжирование моделей
-- `mws_assistant/estimation.py` — расчет стоимости и 24h billing approximation
-- `mws_assistant/reporting.py` — сбор финального структурированного отчета
-- `mws_assistant/coordinator.py` — orchestration всего pipeline
-- `mws_adk_app/agent.py` — ADK agent и tool behavior
-- `mws_assistant/api.py` — OpenAI-compatible HTTP API
+Короткое описание слоев:
 
-## Структура проекта
+- `mws_assistant/api.py`  
+  HTTP API в формате OpenAI
+- `mws_adk_app/agent.py`  
+  диалоговый слой на Google ADK
+- `run_mws_assistant()`  
+  единственная точка входа из агента в Python-ядро
+- `mws_assistant/coordinator.py`  
+  оркестрация всего пайплайна
+- `mws_assistant/mws_catalog.py`  
+  загрузка, парсинг и кэширование каталога MWS
+- `mws_assistant/recommendation.py`  
+  фильтрация и ранжирование моделей
+- `mws_assistant/estimation.py`  
+  расчет стоимости
+- `mws_assistant/reporting.py`  
+  сбор итогового отчета
 
-```text
-.
-├── mws_assistant/
-│   ├── __init__.py
-│   ├── api.py
-│   ├── api_models.py
-│   ├── coordinator.py
-│   ├── estimation.py
-│   ├── mws_catalog.py
-│   ├── observability.py
-│   ├── recommendation.py
-│   ├── reporting.py
-│   └── validation.py
-├── mws_adk_app/
-│   ├── __init__.py
-│   └── agent.py
-├── tests/
-│   ├── test_api.py
-│   ├── test_catalog_cache.py
-│   ├── test_estimation.py
-│   ├── test_recommendation.py
-│   └── test_validation.py
-├── docs/
-│   └── architecture.png
-└── .env_example
-```
+Подробности:
 
-## Локальный запуск
+[docs/architecture_overview.md](docs/architecture_overview.md)
 
-### 1. Создать и активировать venv
+## Соответствие ТЗ
+
+| Требование | Статус | Комментарий |
+| --- | --- | --- |
+| API в формате OpenAI | Да | `GET /health`, `GET /v1/models`, `POST /v1/chat/completions` |
+| Google ADK | Да | агент + tool boundary |
+| Динамические данные MWS | Да | каталог и цены парсятся с сайта MWS |
+| Подбор моделей | Да | вынесен в отдельный модуль |
+| Расчет стоимости | Да | отдельный модуль с учетом `base/promo` |
+| Структурированный отчет | Да | `input_data`, `recommended_models`, `calculations`, `limitations` |
+| Диалог в рамках сессии | Да | через `SessionService` и `session_id` |
+| Тесты | Да | API, валидация, подбор, расчет, кэш |
+| `stream=True` | Да | потоковый ответ через SSE |
+
+## Быстрый запуск
+
+### 1. Создать окружение
 
 ```powershell
 python -m venv .venv
 .venv\Scripts\Activate.ps1
-```
-
-### 2. Установить зависимости
-
-Минимальный набор библиотек уже зафиксирован в `requirements.txt`
-
-```powershell
 python -m pip install -r requirements.txt
 ```
 
-### 3. Заполнить `.env`
+### 2. Заполнить `.env`
 
-Пример есть в `.env_example`
+Шаблон:
 
-Нужно указать:
+[.env_example](.env_example)
+
+Минимально нужны:
 
 ```env
 OPENAI_API_KEY=<API key сервисного аккаунта MWS>
-OPENAI_API_BASE=https://gpt.mwsapis.ru/projects/<project>/openai/v1
+OPENAI_API_BASE=https://<твой-endpoint>/v1
 MODEL_NAME=qwen3-235b-instruct
 PYTHONUTF8=1
 ```
 
-### 4. Запустить HTTP API
+### 3. Запустить API
 
 ```powershell
 .venv\Scripts\python.exe -m mws_assistant.api
 ```
 
-Сервер поднимется на:
+Адрес:
 
 ```text
 http://127.0.0.1:8080
 ```
 
-### 5. Запустить ADK web UI
+### 4. Запустить ADK UI
 
 ```powershell
 adk web
 ```
 
-После этого можно открыть локальный ADK UI и поработать с агентом напрямую
+Если запускать из корня репозитория, в списке приложений нужно выбрать **`mws_adk_app`**
 
-## Запуск через Docker
-
-### Поднять API
+### 5. Запуск в Docker
 
 ```powershell
 docker compose up --build api
 ```
 
-После этого API будет доступен на:
+## API
 
-```text
-http://127.0.0.1:8080
-```
+Доступные endpoints:
 
-Контейнер использует переменные из `.env`
+- `GET /health`
+- `GET /v1/models`
+- `POST /v1/chat/completions`
 
-### Прогнать тесты в контейнере
+Поддерживается:
 
-```powershell
-docker compose --profile test up --build tests
-```
-
-### Остановить контейнеры
-
-```powershell
-docker compose down
-```
-
-Что именно завернуто в Docker:
-- OpenAI-compatible API
-- ADK agent, который вызывается из API
-- все deterministic модули ядра
-
-Что не завернуто отдельно:
-- `adk web`
-
-## Доступные API endpoints
-
-### `GET /health`
-
-Проверка, что сервер жив
-
-Пример ответа:
-
-```json
-{"status": "ok"}
-```
-
-### `GET /v1/models`
-
-Возвращает список доступных публичных моделей API
-
-Сейчас наружу отдается один alias:
-- `mws-assistant`
-
-### `POST /v1/chat/completions`
-
-Основной OpenAI-compatible endpoint
-
-Поддерживает:
-- `model`
-- `messages`
-- `stream`
+- обычный ответ
+- `stream=True`
 - `user`
 - `session_id`
+- `X-Session-Id`
 
-Также можно передавать `X-Session-Id` header
-
-## Пример обычного запроса
-
-PowerShell:
+Пример запроса:
 
 ```powershell
 $body = @{
@@ -223,7 +142,7 @@ $body = @{
   messages = @(
     @{
       role = "user"
-      content = "Подбери дешевую модель для эмбеддингов"
+      content = "Подбери недорогую модель для эмбеддингов"
     }
   )
   stream = $false
@@ -236,115 +155,49 @@ Invoke-RestMethod `
   -Body $body
 ```
 
-Сервер вернет `X-Session-Id`, который можно использовать для продолжения того же диалога
-
-Пример ответа:
-
-```json
-{
-  "id": "chatcmpl-...",
-  "object": "chat.completion",
-  "created": 1776687907,
-  "model": "mws-assistant",
-  "choices": [
-    {
-      "index": 0,
-      "message": {
-        "role": "assistant",
-        "content": "..."
-      },
-      "finish_reason": "stop"
-    }
-  ],
-  "usage": {
-    "prompt_tokens": 1227,
-    "completion_tokens": 106,
-    "total_tokens": 1333
-  }
-}
-```
-
-## Пример stream запроса
-
-PowerShell:
-
-```powershell
-$body = @{
-  model = "mws-assistant"
-  messages = @(
-    @{
-      role = "user"
-      content = "Подбери дешевую модель для эмбеддингов"
-    }
-  )
-  stream = $true
-} | ConvertTo-Json -Depth 5
-
-Set-Content -Path stream_request.json -Value $body -Encoding utf8
-curl.exe -N -X POST "http://127.0.0.1:8080/v1/chat/completions" -H "Content-Type: application/json" --data-binary "@stream_request.json"
-```
-
-Ответ идет как SSE:
-- `chat.completion.chunk`
-- затем `data: [DONE]`
-- чанки отдаются из ADK event stream
-
-## Как собирается итоговый ответ
-
-После tool-вызова API возвращает структуру, которая опирается на отчет из:
-- `input_data`
-- `recommended_models`
-- `calculations`
-- `limitations`
-
-То есть ассистент использует реальный вычисленный отчет
-
 ## Тесты
 
 Запуск:
 
 ```powershell
-.venv\Scripts\python.exe -m pytest -v
+.venv\Scripts\python.exe -m pytest -q
 ```
 
 Что покрыто:
-- 24h billing approximation
-- recommendation logic
-- входная pydantic validation
-- OpenAI-compatible API endpoints
-- server-side session behavior
-- SSE streaming response format
 
-## Observability
+- валидация входных данных
+- логика подбора моделей
+- расчет стоимости
+- API в формате OpenAI
+- работа серверной сессии
+- потоковый ответ `stream=True`
+- кэш каталога MWS
 
-В проекте есть минимальная observability:
-- счетчики запросов к MWS
-- cache hit / miss для каталога
-- тайминги каталога
-- тайминг полного assistant flow
-- подробные логи agent/tool/coordinator
+## Материалы для проверки
 
-Основной код метрик лежит в `mws_assistant/observability.py`
+Если смотреть проект как практическую работу, удобнее всего начать с этих файлов:
 
-## Ограничения текущей реализации
+- [docs/reviewer_guide.md](docs/reviewer_guide.md)
+- [docs/architecture_overview.md](docs/architecture_overview.md)
+- [docs/reviewer_runs/qwen3-235b-instruct](docs/reviewer_runs/qwen3-235b-instruct)
 
-- server-side session хранится в `InMemorySessionService`, то есть теряется после рестарта процесса
-- каталог кешируется только в рамках Python процесса и тоже теряется после рестарта
-- `usage` в обычном non-stream ответе заполняется из ADK usage metadata
-- для `stream=True` отдельный финальный usage block пока не добавлен
-- 24h billing rule смоделирован на дневной агрегации, а не на почасовом уровне
-- каталог MWS парсится по HTML, поэтому при серьезных изменениях в верстке MWS может потребоваться адаптация парсера
+Там лежат:
 
-## Почему решение выглядит инженерно
+- краткий маршрут проверки
+- описание архитектуры
+- ручные прогоны с примерами диалога
 
-- прайсы не захардкожены
-- recommendation и estimation не спрятаны в prompt
-- agent не делает молчаливые assumptions для cost estimation
-- вход валидируется отдельным слоем
-- есть тесты и базовые метрики
+## Ограничения
+
+- серверная сессия хранится в памяти процесса и теряется после рестарта
+- кэш каталога тоже хранится только в памяти процесса
+- `usage` для обычного ответа заполняется, для `stream=True` отдельного блока пока нет
+- каталог MWS парсится по HTML, поэтому при изменении верстки парсер может потребовать доработки
+- правило 24 часов моделируется на уровне дневной агрегации
 
 ## Что можно улучшить дальше
 
-- сделать persistent cache каталога между рестартами
-- добавить usage block и для `stream=True`
-- покрыть тестами API и parser
+- сделать постоянное хранилище для сессий и кэша
+- добавить информацию о количестве токенов и для `stream=True`
+- добавить отдельные регрессионные тесты парсера
+- еще сильнее ужесточить поведение агента на сложных follow-up сценариях

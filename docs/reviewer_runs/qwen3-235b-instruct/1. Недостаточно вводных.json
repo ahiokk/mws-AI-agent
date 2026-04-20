@@ -1,0 +1,62 @@
+{
+  "id": "e281ce67-132d-46a2-8977-09f4822afca2",
+  "appName": "mws_adk_app",
+  "userId": "user",
+  "state": {
+    "__session_metadata__": {
+      "displayName": "Нужно подобрать модель для чат-ассистента подде..."
+    }
+  },
+  "events": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Нужно подобрать модель для чат-ассистента поддержки клиентов"
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-3b14eb38-e6fc-402d-9210-e152778a0e91",
+      "author": "user",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "bf6a3921-2db9-4130-b36c-9dd7c13140c5",
+      "timestamp": 1776712664.1680706
+    },
+    {
+      "modelVersion": "qwen3-235b-instruct",
+      "content": {
+        "parts": [
+          {
+            "text": "Я — ассистент по подбору моделей из MWS GPT Model Hub. Помогу выбрать подходящую модель для вашего чат-ассистента поддержки клиентов, оценить стоимость и объяснить компромиссы.\n\nДля начала уточните, пожалуйста:\n- Сколько примерно запросов в день будет обрабатывать ассистент?\n- Сколько в среднем токенов будет на вход (вопрос клиента)?"
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "finishReason": "STOP",
+      "usageMetadata": {
+        "cachedContentTokenCount": 0,
+        "candidatesTokenCount": 113,
+        "promptTokenCount": 1243,
+        "totalTokenCount": 1356
+      },
+      "invocationId": "e-3b14eb38-e6fc-402d-9210-e152778a0e91",
+      "author": "mws_selection_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "3797fc07-1fa3-4e27-bcaf-fc276170a801",
+      "timestamp": 1776712668.6811187
+    }
+  ],
+  "lastUpdateTime": 1776712668.6811187
+}

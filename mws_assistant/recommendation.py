@@ -176,6 +176,10 @@ def score_by_use_case(model: dict, request: RecommendationRequest) -> float:
         # Плюс просто за то, что это не embedding
         if not is_embedding_model(model):
             score += 1.0
+        # coding-модели могут быть сильными, но для обычного text/chat кейса
+        # это скорее побочный матч, а не естественный лучший выбор
+        if is_coding_model(model):
+            score -= 1.5
     # 3. Сценарий embedding
     elif request.use_case == 'embedding':
         # Для эмбеддинг задачи нужны эмбеддеры. Даем сильный бонус

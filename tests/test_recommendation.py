@@ -58,3 +58,11 @@ def test_coding_use_case_prefers_coder_model() -> None:
     recommendations = recommend_models(CATALOG, request)
 
     assert recommendations[0]["name"] == "coder-small"
+
+
+def test_chat_use_case_does_not_prioritize_coder_model() -> None:
+    request = RecommendationRequest(use_case="chat", max_recommendations=1)
+
+    recommendations = recommend_models(CATALOG, request)
+
+    assert recommendations[0]["name"] == "generic-text"

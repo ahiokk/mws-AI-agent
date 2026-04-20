@@ -82,7 +82,6 @@ def build_calculations_block(calculations: list[dict]) -> list[dict]:
         )
 
     return result
-
 def build_limitations_block(calculations: list[dict]) -> list[str]: 
     # собираем, какие режимы цены применились
     effective_price_modes = {item["effective_price_mode"] for item in calculations}

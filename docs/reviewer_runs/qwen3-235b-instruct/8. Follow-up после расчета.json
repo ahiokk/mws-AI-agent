@@ -1,0 +1,357 @@
+{
+  "id": "7853cdca-96f1-428b-981a-67fa3053d981",
+  "appName": "mws_adk_app",
+  "userId": "user",
+  "state": {
+    "__session_metadata__": {
+      "displayName": "Нужно выбрать модель для RAG-системы по внутрен..."
+    }
+  },
+  "events": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Нужно выбрать модель для RAG-системы по внутренней базе знаний компании\nнужны качественные ответы по документам\nбез картинок\nпримерно 12000 запросов в день\n2500 токенов на вход\n700 токенов на выход\nбюджет 180000 рублей в месяц"
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-fcb09199-9c3f-4b46-b4c8-5f647fa0c017",
+      "author": "user",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "013cfe35-c5b4-4abb-92cd-7ca890c7c516",
+      "timestamp": 1776714065.3926556
+    },
+    {
+      "modelVersion": "qwen3-235b-instruct",
+      "content": {
+        "parts": [
+          {
+            "functionCall": {
+              "id": "chatcmpl-tool-7120c94af50b4f39bd4c297f2fd7f0be",
+              "args": {
+                "use_case": "analysis",
+                "requests_per_day": 12000,
+                "avg_input_tokens_per_request": 2500,
+                "avg_output_tokens_per_request": 700,
+                "budget_rub": "180000",
+                "needs_image_inputs": false,
+                "quality_priority": "high",
+                "budget_priority": "balanced",
+                "period_days": 30,
+                "output_tokens_source": "user"
+              },
+              "name": "run_mws_assistant"
+            }
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "finishReason": "STOP",
+      "usageMetadata": {
+        "cachedContentTokenCount": 0,
+        "candidatesTokenCount": 111,
+        "promptTokenCount": 1311,
+        "totalTokenCount": 1422
+      },
+      "invocationId": "e-fcb09199-9c3f-4b46-b4c8-5f647fa0c017",
+      "author": "mws_selection_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "longRunningToolIds": [],
+      "id": "db2fb7be-a1af-40be-9f6c-67b2d5857bc9",
+      "timestamp": 1776714065.4036548
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "functionResponse": {
+              "id": "chatcmpl-tool-7120c94af50b4f39bd4c297f2fd7f0be",
+              "name": "run_mws_assistant",
+              "response": {
+                "input_data": {
+                  "use_case": "analysis",
+                  "needs_image_input": false,
+                  "min_context_k_tokens": null,
+                  "quality_priority": "high",
+                  "budget_priority": "balanced",
+                  "max_recommendations": 3,
+                  "avg_input_tokens_per_request": 2500,
+                  "avg_output_tokens_per_request": 700,
+                  "requests_per_day": 12000,
+                  "period_days": 30,
+                  "budget_rub": "180000",
+                  "requested_price_mode": "auto"
+                },
+                "recommended_models": [
+                  {
+                    "name": "qwen3-235b-instruct",
+                    "developer": "QWEN",
+                    "input_modalities": [
+                      "Text"
+                    ],
+                    "output_modality": "Text",
+                    "context_k_tokens": 256,
+                    "size_b_params": 235,
+                    "score": 8.428571428571429,
+                    "reasons": [
+                      "Имеет большой контекст: 256k токенов",
+                      "Выглядит сильной по размеру модели для приоритета на качество"
+                    ]
+                  },
+                  {
+                    "name": "qwen3-coder-480b-a35b",
+                    "developer": "QWEN",
+                    "input_modalities": [
+                      "Text"
+                    ],
+                    "output_modality": "Text",
+                    "context_k_tokens": 256,
+                    "size_b_params": 480,
+                    "score": 7.928571428571429,
+                    "reasons": [
+                      "Имеет большой контекст: 256k токенов",
+                      "Выглядит сильной по размеру модели для приоритета на качество"
+                    ]
+                  },
+                  {
+                    "name": "glm-4.6-357b",
+                    "developer": "Z.ai",
+                    "input_modalities": [
+                      "Text"
+                    ],
+                    "output_modality": "Text",
+                    "context_k_tokens": 200,
+                    "size_b_params": 357,
+                    "score": 7.785714285714286,
+                    "reasons": [
+                      "Имеет большой контекст: 200k токенов",
+                      "Выглядит сильной по размеру модели для приоритета на качество"
+                    ]
+                  }
+                ],
+                "calculations": [
+                  {
+                    "model_name": "qwen3-235b-instruct",
+                    "requested_price_mode": "auto",
+                    "effective_price_mode": "promo",
+                    "promo_active": true,
+                    "billing_unit_tokens": 100,
+                    "estimated_input_tokens": 900000000,
+                    "estimated_output_tokens": 252000000,
+                    "billed_input_tokens": 900000000,
+                    "billed_output_tokens": 252000000,
+                    "input_cost_rub": "54900.000",
+                    "output_cost_rub": "61488.000",
+                    "total_cost_rub": "116388.000",
+                    "fit_budget": true,
+                    "expired_input_tokens": 0,
+                    "expired_output_tokens": 0,
+                    "ending_input_carryover_tokens": 0,
+                    "ending_output_carryover_tokens": 0
+                  },
+                  {
+                    "model_name": "qwen3-coder-480b-a35b",
+                    "requested_price_mode": "auto",
+                    "effective_price_mode": "promo",
+                    "promo_active": true,
+                    "billing_unit_tokens": 100,
+                    "estimated_input_tokens": 900000000,
+                    "estimated_output_tokens": 252000000,
+                    "billed_input_tokens": 900000000,
+                    "billed_output_tokens": 252000000,
+                    "input_cost_rub": "92700.000",
+                    "output_cost_rub": "104328.000",
+                    "total_cost_rub": "197028.000",
+                    "fit_budget": false,
+                    "expired_input_tokens": 0,
+                    "expired_output_tokens": 0,
+                    "ending_input_carryover_tokens": 0,
+                    "ending_output_carryover_tokens": 0
+                  },
+                  {
+                    "model_name": "glm-4.6-357b",
+                    "requested_price_mode": "auto",
+                    "effective_price_mode": "promo",
+                    "promo_active": true,
+                    "billing_unit_tokens": 100,
+                    "estimated_input_tokens": 900000000,
+                    "estimated_output_tokens": 252000000,
+                    "billed_input_tokens": 900000000,
+                    "billed_output_tokens": 252000000,
+                    "input_cost_rub": "103500.000",
+                    "output_cost_rub": "116676.000",
+                    "total_cost_rub": "220176.000",
+                    "fit_budget": false,
+                    "expired_input_tokens": 0,
+                    "expired_output_tokens": 0,
+                    "ending_input_carryover_tokens": 0,
+                    "ending_output_carryover_tokens": 0
+                  }
+                ],
+                "limitations": [
+                  "Модели и цены загружаются из публичной документации MWS на момент расчета.",
+                  "Оценка стоимости является приблизительной и зависит от средних токенов на запрос и числа запросов в день.",
+                  "Правило 24 часов моделируется на уровне дневной агрегации: остаток токенов переносится только на следующий день.",
+                  "Фактический биллинг может отличаться при неравномерном распределении запросов внутри суток.",
+                  "Для части моделей применены акционные цены, если акция была активна на дату расчета."
+                ]
+              }
+            }
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-fcb09199-9c3f-4b46-b4c8-5f647fa0c017",
+      "author": "mws_selection_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "a36454eb-b5e3-47a2-a0be-a79d5ac14f1b",
+      "timestamp": 1776714070.3222394
+    },
+    {
+      "modelVersion": "qwen3-235b-instruct",
+      "content": {
+        "parts": [
+          {
+            "text": "На основе ваших требований к RAG-системе для внутренней базы знаний, вот итоговая рекомендация:\n\n### 🔍 Краткое резюме\n- **Использование**: анализ и генерация ответов по документам (RAG)\n- **Запросов в день**: 12 000\n- **Токенов на вход**: 2 500\n- **Токенов на выход**: 700\n- **Бюджет**: 180 000 ₽/мес\n- **Приоритет**: высокое качество, без изображений\n\n---\n\n### ✅ Рекомендованная модель\n\n**Qwen3-235B-Instruct** (от QWEN)  \n- **Контекст**: до 256K токенов — отлично подходит для длинных документов\n- **Качество**: высокое, модель большого размера (235 млрд параметров)\n- **Оценка стоимости**: **116 388 ₽/мес**\n- **Укладывается в бюджет**: ✅ Да (остаётся ~63 612 ₽ резерва)\n\nЭто **наилучший баланс качества и стоимости** среди подходящих моделей.\n\n---\n\n### ❌ Альтернативы (не вписываются в бюджет)\n- **Qwen3-Coder-480B-A35B**: ~197 028 ₽/мес — **превышает бюджет**\n- **GLM-4.6-357B**: ~220 176 ₽/мес — **не подходит по цене**\n\n---\n\n### 💡 Вывод\n**Рекомендую использовать `qwen3-235b-instruct`** — она обеспечит высокое качество ответов по вашей базе знаний, поддерживает длинный контекст и **полностью укладывается в бюджет**.\n\nЕсли в будущем потребуется ещё более высокое качество, можно пересмотреть вариант с увеличением бюджета или оптимизацией токенов на выходе.\n\nГотов помочь с настройкой или сравнением по другим критериям."
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "finishReason": "STOP",
+      "usageMetadata": {
+        "cachedContentTokenCount": 0,
+        "candidatesTokenCount": 537,
+        "promptTokenCount": 2727,
+        "totalTokenCount": 3264
+      },
+      "invocationId": "e-fcb09199-9c3f-4b46-b4c8-5f647fa0c017",
+      "author": "mws_selection_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "686583fd-1df9-46f8-b0aa-0d218590e87a",
+      "timestamp": 1776714084.9101586
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "ЫыА что из этого будет самым дешевым вариантом"
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-add8f884-f4fc-4b9c-83dd-b76192d10e52",
+      "author": "user",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "ebcec738-f4b9-4d45-a43b-d009a51e4e54",
+      "timestamp": 1776714372.5344982
+    },
+    {
+      "modelVersion": "qwen3-235b-instruct",
+      "content": {
+        "parts": [
+          {
+            "text": "Самым дешёвым вариантом из рассмотренных — и единственным, укладывающимся в ваш бюджет — является **`qwen3-235b-instruct`**.\n\nОн стоит **116 388 ₽/мес**, что является **минимальной возможной стоимостью** среди моделей с высоким качеством и достаточным объёмом контекста (256K) для вашей RAG-системы.\n\nВсе остальные модели с аналогичным или лучшим качеством (например, `qwen3-coder-480b-a35b`, `glm-4.6-357b`) стоят дороже — от 197 000 ₽ и выше — и **не вписываются в бюджет**.\n\n---\n\n### 💡 Итог:\n✅ **Самый дешёвый *и* подходящий* вариант: `qwen3-235b-instruct`**  \n🎯 Лучшее сочетание цены, качества и объёма контекста для вашей задачи.\n\nЕсли хотите, могу проверить, есть ли ещё более дешёвые модели с чуть меньшим качеством — например, если снизить приоритет с \"высокого\" на \"средний\". Нужно?"
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "finishReason": "STOP",
+      "usageMetadata": {
+        "cachedContentTokenCount": 0,
+        "candidatesTokenCount": 304,
+        "promptTokenCount": 3288,
+        "totalTokenCount": 3592
+      },
+      "invocationId": "e-add8f884-f4fc-4b9c-83dd-b76192d10e52",
+      "author": "mws_selection_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "58cfae02-1ed1-4021-92f3-1e7386bc337f",
+      "timestamp": 1776714381.7212152
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "А что из этого будет самым дешевым вариантом"
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-793b2674-7a40-454d-a997-f58c9b633309",
+      "author": "user",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "22c0e800-f5b5-414b-84a9-9744f370ae78",
+      "timestamp": 1776714390.3312798
+    },
+    {
+      "modelVersion": "qwen3-235b-instruct",
+      "content": {
+        "parts": [
+          {
+            "text": "Самым дешёвым вариантом из подходящих под вашу задачу и бюджет является:\n\n### ✅ **`qwen3-235b-instruct`**  \n- **Стоимость**: **116 388 ₽/мес**\n- **Укладывается в бюджет**: да (остаётся ~63 612 ₽)\n- **Качество**: высокое\n- **Контекст**: 256K — отлично для RAG\n- **Поддержка текста**: да, без изображений — как вы и просили\n\nЭто **единственный вариант**, который:\n- обеспечивает высокое качество,\n- поддерживает длинный контекст,\n- и **укладывается в бюджет 180 000 ₽**.\n\nВсе остальные модели в списке дороже:\n- `qwen3-coder-480b-a35b` — 197 028 ₽/мес\n- `glm-4.6-357b` — 220 176 ₽/мес\n\n👉 Таким образом, **`qwen3-235b-instruct` — это одновременно и самый дешёвый, и подходящий по качеству вариант**.\n\nЕсли хотите рассмотреть **ещё более дешёвые модели** (например, с меньшим качеством или контекстом), могу предложить варианты с приоритетом \"среднее качество\". Нужно?"
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "finishReason": "STOP",
+      "usageMetadata": {
+        "cachedContentTokenCount": 0,
+        "candidatesTokenCount": 355,
+        "promptTokenCount": 3614,
+        "totalTokenCount": 3969
+      },
+      "invocationId": "e-793b2674-7a40-454d-a997-f58c9b633309",
+      "author": "mws_selection_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "30e4bca7-c43a-4dd5-bee2-e779ff37f4d0",
+      "timestamp": 1776714400.382612
+    }
+  ],
+  "lastUpdateTime": 1776714400.382612
+}

@@ -1,0 +1,258 @@
+{
+  "id": "59c2a522-0f8b-4a6f-9538-e3652fc8fb11",
+  "appName": "mws_adk_app",
+  "userId": "user",
+  "state": {
+    "__session_metadata__": {
+      "displayName": "Нужен максимально качественный генератор юридич..."
+    }
+  },
+  "events": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Нужен максимально качественный генератор юридических документов\n5000 запросов в день\n6000 токенов на вход\n3000 токенов на выход\nбюджет 10000 рублей в месяц"
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-de3b9088-5b22-4ee7-943a-da8a036834c5",
+      "author": "user",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "16b1efd4-1ce6-49b3-a90a-f06878a4e38f",
+      "timestamp": 1776715304.204029
+    },
+    {
+      "modelVersion": "qwen3-235b-instruct",
+      "content": {
+        "parts": [
+          {
+            "functionCall": {
+              "id": "chatcmpl-tool-0d16dd3c1c4d402f87797c2e36d0a122",
+              "args": {
+                "use_case": "chat",
+                "requests_per_day": 5000,
+                "avg_input_tokens_per_request": 6000,
+                "avg_output_tokens_per_request": 3000,
+                "budget_rub": "10000",
+                "quality_priority": "high",
+                "budget_priority": "balanced",
+                "output_tokens_source": "user"
+              },
+              "name": "run_mws_assistant"
+            }
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "finishReason": "STOP",
+      "usageMetadata": {
+        "cachedContentTokenCount": 0,
+        "candidatesTokenCount": 95,
+        "promptTokenCount": 1781,
+        "totalTokenCount": 1876
+      },
+      "invocationId": "e-de3b9088-5b22-4ee7-943a-da8a036834c5",
+      "author": "mws_selection_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "longRunningToolIds": [],
+      "id": "6fbc8619-98bf-46ab-9143-066a8d2bc192",
+      "timestamp": 1776715304.2150302
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "functionResponse": {
+              "id": "chatcmpl-tool-0d16dd3c1c4d402f87797c2e36d0a122",
+              "name": "run_mws_assistant",
+              "response": {
+                "input_data": {
+                  "use_case": "chat",
+                  "needs_image_input": false,
+                  "min_context_k_tokens": null,
+                  "quality_priority": "high",
+                  "budget_priority": "balanced",
+                  "max_recommendations": 3,
+                  "avg_input_tokens_per_request": 6000,
+                  "avg_output_tokens_per_request": 3000,
+                  "requests_per_day": 5000,
+                  "period_days": 30,
+                  "budget_rub": "10000",
+                  "requested_price_mode": "auto"
+                },
+                "recommended_models": [
+                  {
+                    "name": "qwen3-235b-instruct",
+                    "developer": "QWEN",
+                    "input_modalities": [
+                      "Text"
+                    ],
+                    "output_modality": "Text",
+                    "context_k_tokens": 256,
+                    "size_b_params": 235,
+                    "score": 7.428571428571429,
+                    "reasons": [
+                      "Имеет большой контекст: 256k токенов",
+                      "Выглядит сильной по размеру модели для приоритета на качество"
+                    ]
+                  },
+                  {
+                    "name": "glm-4.6-357b",
+                    "developer": "Z.ai",
+                    "input_modalities": [
+                      "Text"
+                    ],
+                    "output_modality": "Text",
+                    "context_k_tokens": 200,
+                    "size_b_params": 357,
+                    "score": 6.785714285714286,
+                    "reasons": [
+                      "Имеет большой контекст: 200k токенов",
+                      "Выглядит сильной по размеру модели для приоритета на качество"
+                    ]
+                  },
+                  {
+                    "name": "kimi-k2-instruct",
+                    "developer": "Moonshot AI",
+                    "input_modalities": [
+                      "Text",
+                      "Image"
+                    ],
+                    "output_modality": "Text",
+                    "context_k_tokens": 128,
+                    "size_b_params": 1024,
+                    "score": 6,
+                    "reasons": [
+                      "Имеет большой контекст: 128k токенов",
+                      "Выглядит сильной по размеру модели для приоритета на качество"
+                    ]
+                  }
+                ],
+                "calculations": [
+                  {
+                    "model_name": "qwen3-235b-instruct",
+                    "requested_price_mode": "auto",
+                    "effective_price_mode": "promo",
+                    "promo_active": true,
+                    "billing_unit_tokens": 100,
+                    "estimated_input_tokens": 900000000,
+                    "estimated_output_tokens": 450000000,
+                    "billed_input_tokens": 900000000,
+                    "billed_output_tokens": 450000000,
+                    "input_cost_rub": "54900.000",
+                    "output_cost_rub": "109800.000",
+                    "total_cost_rub": "164700.000",
+                    "fit_budget": false,
+                    "expired_input_tokens": 0,
+                    "expired_output_tokens": 0,
+                    "ending_input_carryover_tokens": 0,
+                    "ending_output_carryover_tokens": 0
+                  },
+                  {
+                    "model_name": "glm-4.6-357b",
+                    "requested_price_mode": "auto",
+                    "effective_price_mode": "promo",
+                    "promo_active": true,
+                    "billing_unit_tokens": 100,
+                    "estimated_input_tokens": 900000000,
+                    "estimated_output_tokens": 450000000,
+                    "billed_input_tokens": 900000000,
+                    "billed_output_tokens": 450000000,
+                    "input_cost_rub": "103500.000",
+                    "output_cost_rub": "208350.000",
+                    "total_cost_rub": "311850.000",
+                    "fit_budget": false,
+                    "expired_input_tokens": 0,
+                    "expired_output_tokens": 0,
+                    "ending_input_carryover_tokens": 0,
+                    "ending_output_carryover_tokens": 0
+                  },
+                  {
+                    "model_name": "kimi-k2-instruct",
+                    "requested_price_mode": "auto",
+                    "effective_price_mode": "promo",
+                    "promo_active": true,
+                    "billing_unit_tokens": 100,
+                    "estimated_input_tokens": 900000000,
+                    "estimated_output_tokens": 450000000,
+                    "billed_input_tokens": 900000000,
+                    "billed_output_tokens": 450000000,
+                    "input_cost_rub": "164700.000",
+                    "output_cost_rub": "329400.000",
+                    "total_cost_rub": "494100.000",
+                    "fit_budget": false,
+                    "expired_input_tokens": 0,
+                    "expired_output_tokens": 0,
+                    "ending_input_carryover_tokens": 0,
+                    "ending_output_carryover_tokens": 0
+                  }
+                ],
+                "limitations": [
+                  "Модели и цены загружаются из публичной документации MWS на момент расчета.",
+                  "Оценка стоимости является приблизительной и зависит от средних токенов на запрос и числа запросов в день.",
+                  "Правило 24 часов моделируется на уровне дневной агрегации: остаток токенов переносится только на следующий день.",
+                  "Фактический биллинг может отличаться при неравномерном распределении запросов внутри суток.",
+                  "Для части моделей применены акционные цены, если акция была активна на дату расчета."
+                ]
+              }
+            }
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-de3b9088-5b22-4ee7-943a-da8a036834c5",
+      "author": "mws_selection_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "d187c4d7-5846-4334-896f-d81f69ba4032",
+      "timestamp": 1776715312.1032674
+    },
+    {
+      "modelVersion": "qwen3-235b-instruct",
+      "content": {
+        "parts": [
+          {
+            "text": "На основе ваших требований — **максимальное качество генерации юридических документов**, 5000 запросов в день, 6000 токенов на вход, 3000 на выход — были рассчитаны варианты с тремя наиболее подходящими моделями высокого качества.\n\n### 📌 Результаты оценки стоимости (на месяц):\nВсе предложенные модели **превышают ваш бюджет 10 000 ₽**:\n\n| Модель | Общая стоимость (в месяц) | Помещается в бюджет? |\n|-------|----------------------------|-----------------------|\n| **qwen3-235b-instruct** | 164 700 ₽ | ❌ Нет |\n| **glm-4.6-357b** | 311 850 ₽ | ❌ Нет |\n| **kimi-k2-instruct** | 494 100 ₽ | ❌ Нет |\n\n---\n\n### 🔍 Анализ:\n- **Самый доступный вариант** — `qwen3-235b-instruct` (164 700 ₽/мес), но он всё равно **в 16 раз дороже** вашего бюджета.\n- Все модели находятся в промо-режиме (сниженные цены), но даже это не помогает уложиться в 10 000 ₽.\n- Общий объём токенов:  \n  - **Вход**: 900 млн токенов/мес  \n  - **Выход**: 450 млн токенов/мес  \n  Это очень высокая нагрузка.\n\n---\n\n### 🛠 Возможные решения:\n1. **Снизить нагрузку**:\n   - Уменьшить количество запросов.\n   - Сократить длину входных или выходных текстов.\n2. **Пересмотреть бюджет**:\n   - Минимальная модель из топа качества стоит более 160 тыс. ₽/мес.\n3. **Понизить приоритет качества**:\n   - Могу подобрать более дешёвые модели, если вы готовы пожертвовать частью качества.\n\n---\n\n### ❓ Что дальше?\nХотите ли вы:\n- Рассмотреть **более бюджетные модели** с приемлемым качеством?\n- Оптимизировать **объём токенов или число запросов**?\n- Получить оценку для **пониженного качества (например, medium)**?\n\nНапишите, и я подберу вариант, который уложится в 10 000 ₽."
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "finishReason": "STOP",
+      "usageMetadata": {
+        "cachedContentTokenCount": 0,
+        "candidatesTokenCount": 628,
+        "promptTokenCount": 3156,
+        "totalTokenCount": 3784
+      },
+      "invocationId": "e-de3b9088-5b22-4ee7-943a-da8a036834c5",
+      "author": "mws_selection_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "735700ad-901f-4f3d-9a7c-ba92de8a20c5",
+      "timestamp": 1776715329.172999
+    }
+  ],
+  "lastUpdateTime": 1776715329.172999
+}

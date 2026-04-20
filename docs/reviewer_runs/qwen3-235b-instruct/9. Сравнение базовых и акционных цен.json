@@ -1,0 +1,499 @@
+{
+  "id": "aabb0a85-ac36-4e23-bf8e-bbbf0748ac58",
+  "appName": "mws_adk_app",
+  "userId": "user",
+  "state": {
+    "__session_metadata__": {
+      "displayName": "Подбери модель для анализа документов\n10000 зап..."
+    }
+  },
+  "events": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Подбери модель для анализа документов\n10000 запросов в день\n2000 токенов на вход\n500 токенов на выход\nбюджет 120000 рублей в месяц\nсчитай только по базовым ценам, без акции"
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-a2c18c35-30a3-4eea-8218-b523865d70b6",
+      "author": "user",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "8451c905-5e9d-4546-83bb-efaf420b5c86",
+      "timestamp": 1776716357.5271327
+    },
+    {
+      "modelVersion": "qwen3-235b-instruct",
+      "content": {
+        "parts": [
+          {
+            "functionCall": {
+              "id": "chatcmpl-tool-bb5f66f7fab64d8f85f114dc3746c155",
+              "args": {
+                "use_case": "analysis",
+                "requests_per_day": 10000,
+                "avg_input_tokens_per_request": 2000,
+                "avg_output_tokens_per_request": 500,
+                "budget_rub": "120000",
+                "price_mode": "base",
+                "period_days": 30
+              },
+              "name": "run_mws_assistant"
+            }
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "finishReason": "STOP",
+      "usageMetadata": {
+        "cachedContentTokenCount": 0,
+        "candidatesTokenCount": 89,
+        "promptTokenCount": 1790,
+        "totalTokenCount": 1879
+      },
+      "invocationId": "e-a2c18c35-30a3-4eea-8218-b523865d70b6",
+      "author": "mws_selection_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "longRunningToolIds": [],
+      "id": "db1cf3be-7445-4b15-8a13-b2b36553e30b",
+      "timestamp": 1776716357.5381322
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "functionResponse": {
+              "id": "chatcmpl-tool-bb5f66f7fab64d8f85f114dc3746c155",
+              "name": "run_mws_assistant",
+              "response": {
+                "input_data": {
+                  "use_case": "analysis",
+                  "needs_image_input": false,
+                  "min_context_k_tokens": null,
+                  "quality_priority": "medium",
+                  "budget_priority": "balanced",
+                  "max_recommendations": 3,
+                  "avg_input_tokens_per_request": 2000,
+                  "avg_output_tokens_per_request": 500,
+                  "requests_per_day": 10000,
+                  "period_days": 30,
+                  "budget_rub": "120000",
+                  "requested_price_mode": "base"
+                },
+                "recommended_models": [
+                  {
+                    "name": "qwen3-235b-instruct",
+                    "developer": "QWEN",
+                    "input_modalities": [
+                      "Text"
+                    ],
+                    "output_modality": "Text",
+                    "context_k_tokens": 256,
+                    "size_b_params": 235,
+                    "score": 6.428571428571429,
+                    "reasons": [
+                      "Имеет большой контекст: 256k токенов",
+                      "Выглядит сильной по размеру модели для приоритета на качество"
+                    ]
+                  },
+                  {
+                    "name": "llama-3.3-70b-instruct",
+                    "developer": "Meta *",
+                    "input_modalities": [
+                      "Text"
+                    ],
+                    "output_modality": "Text",
+                    "context_k_tokens": 128,
+                    "size_b_params": 70,
+                    "score": 6.285714285714286,
+                    "reasons": [
+                      "Имеет большой контекст: 128k токенов",
+                      "Выглядит сильной по размеру модели для приоритета на качество"
+                    ]
+                  },
+                  {
+                    "name": "qwen3-coder-480b-a35b",
+                    "developer": "QWEN",
+                    "input_modalities": [
+                      "Text"
+                    ],
+                    "output_modality": "Text",
+                    "context_k_tokens": 256,
+                    "size_b_params": 480,
+                    "score": 5.928571428571429,
+                    "reasons": [
+                      "Имеет большой контекст: 256k токенов",
+                      "Выглядит сильной по размеру модели для приоритета на качество"
+                    ]
+                  }
+                ],
+                "calculations": [
+                  {
+                    "model_name": "qwen3-235b-instruct",
+                    "requested_price_mode": "base",
+                    "effective_price_mode": "base",
+                    "promo_active": true,
+                    "billing_unit_tokens": 100,
+                    "estimated_input_tokens": 600000000,
+                    "estimated_output_tokens": 150000000,
+                    "billed_input_tokens": 600000000,
+                    "billed_output_tokens": 150000000,
+                    "input_cost_rub": "732000.00",
+                    "output_cost_rub": "183000.00",
+                    "total_cost_rub": "915000.00",
+                    "fit_budget": false,
+                    "expired_input_tokens": 0,
+                    "expired_output_tokens": 0,
+                    "ending_input_carryover_tokens": 0,
+                    "ending_output_carryover_tokens": 0
+                  },
+                  {
+                    "model_name": "llama-3.3-70b-instruct",
+                    "requested_price_mode": "base",
+                    "effective_price_mode": "base",
+                    "promo_active": true,
+                    "billing_unit_tokens": 100,
+                    "estimated_input_tokens": 600000000,
+                    "estimated_output_tokens": 150000000,
+                    "billed_input_tokens": 600000000,
+                    "billed_output_tokens": 150000000,
+                    "input_cost_rub": "878400.000",
+                    "output_cost_rub": "219600.000",
+                    "total_cost_rub": "1098000.000",
+                    "fit_budget": false,
+                    "expired_input_tokens": 0,
+                    "expired_output_tokens": 0,
+                    "ending_input_carryover_tokens": 0,
+                    "ending_output_carryover_tokens": 0
+                  },
+                  {
+                    "model_name": "qwen3-coder-480b-a35b",
+                    "requested_price_mode": "base",
+                    "effective_price_mode": "base",
+                    "promo_active": true,
+                    "billing_unit_tokens": 100,
+                    "estimated_input_tokens": 600000000,
+                    "estimated_output_tokens": 150000000,
+                    "billed_input_tokens": 600000000,
+                    "billed_output_tokens": 150000000,
+                    "input_cost_rub": "1244400.000",
+                    "output_cost_rub": "311100.000",
+                    "total_cost_rub": "1555500.000",
+                    "fit_budget": false,
+                    "expired_input_tokens": 0,
+                    "expired_output_tokens": 0,
+                    "ending_input_carryover_tokens": 0,
+                    "ending_output_carryover_tokens": 0
+                  }
+                ],
+                "limitations": [
+                  "Модели и цены загружаются из публичной документации MWS на момент расчета.",
+                  "Оценка стоимости является приблизительной и зависит от средних токенов на запрос и числа запросов в день.",
+                  "Правило 24 часов моделируется на уровне дневной агрегации: остаток токенов переносится только на следующий день.",
+                  "Фактический биллинг может отличаться при неравномерном распределении запросов внутри суток.",
+                  "В расчете использованы базовые цены MWS."
+                ]
+              }
+            }
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-a2c18c35-30a3-4eea-8218-b523865d70b6",
+      "author": "mws_selection_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "2462b395-4ece-4dfb-95d2-0727f8ed52c2",
+      "timestamp": 1776716363.144436
+    },
+    {
+      "modelVersion": "qwen3-235b-instruct",
+      "content": {
+        "parts": [
+          {
+            "text": "На основе ваших требований:\n\n- **Задача**: анализ документов  \n- **10 000 запросов в день**  \n- **2000 токенов на вход, 500 на выход**  \n- **Бюджет: 120 000 ₽ в месяц**  \n- **Только базовые цены (без акций)**  \n\n### Результаты подбора моделей\n\nК сожалению, **ни одна из подходящих моделей не укладывается в ваш бюджет**. Даже самая дешёвая из рекомендованных — **qwen3-235b-instruct** — будет стоить **915 000 ₽ в месяц**, что в 7,6 раз превышает лимит.\n\n#### Топ-3 рекомендованные модели:\n1. **qwen3-235b-instruct**  \n   - Контекст: 256k  \n   - Стоимость: **915 000 ₽/мес**  \n   - Причина: хорошее качество и большой контекст\n\n2. **llama-3.3-70b-instruct**  \n   - Контекст: 128k  \n   - Стоимость: **1 098 000 ₽/мес**\n\n3. **qwen3-coder-480b-a35b**  \n   - Контекст: 256k  \n   - Стоимость: **1 555 500 ₽/мес**\n\n---\n\n### Что можно сделать?\n\n1. **Увеличить бюджет** — минимум до 915 000 ₽/мес для минимального покрытия.\n2. **Снизить нагрузку**:\n   - Уменьшить число запросов в день\n   - Сократить среднее число токенов на вход/выход\n3. **Рассмотреть использование промо-тарифов** (если допустимо)\n4. **Использовать более дешёвые модели вне текущего MWS-каталога** (не входят в рекомендации)\n\n---\n\nЕсли хотите, могу пересчитать с более низким качеством, меньшим контекстом или с учётом промо-цен. Нужно ли?"
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "finishReason": "STOP",
+      "usageMetadata": {
+        "cachedContentTokenCount": 0,
+        "candidatesTokenCount": 557,
+        "promptTokenCount": 3176,
+        "totalTokenCount": 3733
+      },
+      "invocationId": "e-a2c18c35-30a3-4eea-8218-b523865d70b6",
+      "author": "mws_selection_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "5bef3690-9a9c-4e38-87f7-824d81f3f610",
+      "timestamp": 1776716378.3105874
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Теперь пересчитай тот же сценарий по акционным ценам, если акция активна\n"
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-ec8ebb2e-ed44-47d1-a63d-5d3cfb3e434b",
+      "author": "user",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "d90320f8-49ea-44be-ada9-111141c515dc",
+      "timestamp": 1776716384.1236906
+    },
+    {
+      "modelVersion": "qwen3-235b-instruct",
+      "content": {
+        "parts": [
+          {
+            "functionCall": {
+              "id": "chatcmpl-tool-d24c8673e8594a8d8306e14aaee02c2a",
+              "args": {
+                "use_case": "analysis",
+                "requests_per_day": 10000,
+                "avg_input_tokens_per_request": 2000,
+                "avg_output_tokens_per_request": 500,
+                "budget_rub": "120000",
+                "price_mode": "promo",
+                "period_days": 30
+              },
+              "name": "run_mws_assistant"
+            }
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "finishReason": "STOP",
+      "usageMetadata": {
+        "cachedContentTokenCount": 0,
+        "candidatesTokenCount": 89,
+        "promptTokenCount": 3768,
+        "totalTokenCount": 3857
+      },
+      "invocationId": "e-ec8ebb2e-ed44-47d1-a63d-5d3cfb3e434b",
+      "author": "mws_selection_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "longRunningToolIds": [],
+      "id": "7dc0ad01-b6f3-4ad3-9e09-0b1f977c7ca3",
+      "timestamp": 1776716384.134688
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "functionResponse": {
+              "id": "chatcmpl-tool-d24c8673e8594a8d8306e14aaee02c2a",
+              "name": "run_mws_assistant",
+              "response": {
+                "input_data": {
+                  "use_case": "analysis",
+                  "needs_image_input": false,
+                  "min_context_k_tokens": null,
+                  "quality_priority": "medium",
+                  "budget_priority": "balanced",
+                  "max_recommendations": 3,
+                  "avg_input_tokens_per_request": 2000,
+                  "avg_output_tokens_per_request": 500,
+                  "requests_per_day": 10000,
+                  "period_days": 30,
+                  "budget_rub": "120000",
+                  "requested_price_mode": "promo"
+                },
+                "recommended_models": [
+                  {
+                    "name": "qwen3-235b-instruct",
+                    "developer": "QWEN",
+                    "input_modalities": [
+                      "Text"
+                    ],
+                    "output_modality": "Text",
+                    "context_k_tokens": 256,
+                    "size_b_params": 235,
+                    "score": 6.428571428571429,
+                    "reasons": [
+                      "Имеет большой контекст: 256k токенов",
+                      "Выглядит сильной по размеру модели для приоритета на качество"
+                    ]
+                  },
+                  {
+                    "name": "llama-3.3-70b-instruct",
+                    "developer": "Meta *",
+                    "input_modalities": [
+                      "Text"
+                    ],
+                    "output_modality": "Text",
+                    "context_k_tokens": 128,
+                    "size_b_params": 70,
+                    "score": 6.285714285714286,
+                    "reasons": [
+                      "Имеет большой контекст: 128k токенов",
+                      "Выглядит сильной по размеру модели для приоритета на качество"
+                    ]
+                  },
+                  {
+                    "name": "qwen3-coder-480b-a35b",
+                    "developer": "QWEN",
+                    "input_modalities": [
+                      "Text"
+                    ],
+                    "output_modality": "Text",
+                    "context_k_tokens": 256,
+                    "size_b_params": 480,
+                    "score": 5.928571428571429,
+                    "reasons": [
+                      "Имеет большой контекст: 256k токенов",
+                      "Выглядит сильной по размеру модели для приоритета на качество"
+                    ]
+                  }
+                ],
+                "calculations": [
+                  {
+                    "model_name": "qwen3-235b-instruct",
+                    "requested_price_mode": "promo",
+                    "effective_price_mode": "promo",
+                    "promo_active": true,
+                    "billing_unit_tokens": 100,
+                    "estimated_input_tokens": 600000000,
+                    "estimated_output_tokens": 150000000,
+                    "billed_input_tokens": 600000000,
+                    "billed_output_tokens": 150000000,
+                    "input_cost_rub": "36600.000",
+                    "output_cost_rub": "36600.000",
+                    "total_cost_rub": "73200.000",
+                    "fit_budget": true,
+                    "expired_input_tokens": 0,
+                    "expired_output_tokens": 0,
+                    "ending_input_carryover_tokens": 0,
+                    "ending_output_carryover_tokens": 0
+                  },
+                  {
+                    "model_name": "llama-3.3-70b-instruct",
+                    "requested_price_mode": "promo",
+                    "effective_price_mode": "promo",
+                    "promo_active": true,
+                    "billing_unit_tokens": 100,
+                    "estimated_input_tokens": 600000000,
+                    "estimated_output_tokens": 150000000,
+                    "billed_input_tokens": 600000000,
+                    "billed_output_tokens": 150000000,
+                    "input_cost_rub": "43800.000",
+                    "output_cost_rub": "43800.000",
+                    "total_cost_rub": "87600.000",
+                    "fit_budget": true,
+                    "expired_input_tokens": 0,
+                    "expired_output_tokens": 0,
+                    "ending_input_carryover_tokens": 0,
+                    "ending_output_carryover_tokens": 0
+                  },
+                  {
+                    "model_name": "qwen3-coder-480b-a35b",
+                    "requested_price_mode": "promo",
+                    "effective_price_mode": "promo",
+                    "promo_active": true,
+                    "billing_unit_tokens": 100,
+                    "estimated_input_tokens": 600000000,
+                    "estimated_output_tokens": 150000000,
+                    "billed_input_tokens": 600000000,
+                    "billed_output_tokens": 150000000,
+                    "input_cost_rub": "61800.000",
+                    "output_cost_rub": "62100.000",
+                    "total_cost_rub": "123900.000",
+                    "fit_budget": false,
+                    "expired_input_tokens": 0,
+                    "expired_output_tokens": 0,
+                    "ending_input_carryover_tokens": 0,
+                    "ending_output_carryover_tokens": 0
+                  }
+                ],
+                "limitations": [
+                  "Модели и цены загружаются из публичной документации MWS на момент расчета.",
+                  "Оценка стоимости является приблизительной и зависит от средних токенов на запрос и числа запросов в день.",
+                  "Правило 24 часов моделируется на уровне дневной агрегации: остаток токенов переносится только на следующий день.",
+                  "Фактический биллинг может отличаться при неравномерном распределении запросов внутри суток.",
+                  "Для части моделей применены акционные цены, если акция была активна на дату расчета."
+                ]
+              }
+            }
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-ec8ebb2e-ed44-47d1-a63d-5d3cfb3e434b",
+      "author": "mws_selection_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "f3bf4d80-52a5-41f2-b067-573b144b1192",
+      "timestamp": 1776716386.9239979
+    },
+    {
+      "modelVersion": "qwen3-235b-instruct",
+      "content": {
+        "parts": [
+          {
+            "text": "Теперь с учётом **акционных цен** картина значительно улучшилась. При вашем бюджете **120 000 ₽/мес** и нагрузке:\n\n- **10 000 запросов/день**\n- **2000 токенов на вход, 500 на выход**\n\n### ✅ Подходящие модели по акции\n\n#### 1. **qwen3-235b-instruct** (лучший выбор)\n- **Контекст**: 256k\n- **Стоимость**: **73 200 ₽/мес**\n- **Укладывается в бюджет**: ✅\n- **Преимущества**: высокое качество, большой контекст, самая экономичная среди сильных моделей\n\n#### 2. **llama-3.3-70b-instruct**\n- **Контекст**: 128k\n- **Стоимость**: **87 600 ₽/мес**\n- **Укладывается в бюджет**: ✅\n- **Преимущества**: надёжная и проверенная модель от Meta\n\n#### 3. **qwen3-coder-480b-a35b**\n- **Контекст**: 256k\n- **Стоимость**: **123 900 ₽/мес**\n- **Укладывается в бюджет**: ❌ (на 3,9% выше лимита)\n- **Примечание**: мощная модель, но чуть дороже бюджета\n\n---\n\n### Вывод\n\n✅ **Рекомендую использовать `qwen3-235b-instruct` по акционной цене** — она:\n- идеально вписывается в бюджет (73 200 ₽),\n- имеет очень большой контекст (256k),\n- отлично подходит для анализа документов.\n\nЕсли нужна альтернатива — `llama-3.3-70b-instruct` тоже подходит, но чуть дороже и с меньшим контекстом.\n\n> ⚠️ Важно: акционные цены могут быть ограничены по времени или объёму токенов. Убедитесь, что акция активна на момент использования.\n\nНужна помощь с переходом на промо-тариф или оптимизацией под ещё меньший бюджет?"
+          }
+        ],
+        "role": "model"
+      },
+      "partial": false,
+      "finishReason": "STOP",
+      "usageMetadata": {
+        "cachedContentTokenCount": 0,
+        "candidatesTokenCount": 553,
+        "promptTokenCount": 5160,
+        "totalTokenCount": 5713
+      },
+      "invocationId": "e-ec8ebb2e-ed44-47d1-a63d-5d3cfb3e434b",
+      "author": "mws_selection_agent",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {}
+      },
+      "id": "92483285-e017-4b0d-81c9-663a86c4fecf",
+      "timestamp": 1776716402.5740483
+    }
+  ],
+  "lastUpdateTime": 1776716402.5740483
+}
