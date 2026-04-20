@@ -7,7 +7,7 @@ class RecommendationRequest:
     needs_image_inputs: bool = False        # Нужна ли поддержка картинок
     min_context_k_tokens: int | None = None # Минимально нужный контекст
     quality_priority: str = 'medium'        # Насколько важнее качество, чем цена
-    budget_priority: str = 'balanced'       # Насколько важна дешивизна
+    budget_priority: str = 'balanced'       # Насколько важна низкая цена
     max_recommendations: int = 3            # Сколько моделей хотим вернуть
 
 
@@ -15,7 +15,7 @@ class RecommendationRequest:
         '''
         Встроенный механизм dataclass. Он автоматически вызывается
         после __init__, и держит всю логику валидности объекта
-        рядом с самим объектом. Ошибка возникнет сращу в момент 
+        рядом с самим объектом. Ошибка возникнет сразу в момент 
         создания объекта, а не всплывет где то потом.
         '''
         allowed_use_cases = {'chat', 'coding', 'analysis', 'embedding'}
@@ -32,7 +32,7 @@ class RecommendationRequest:
         # Проверяем, что приоритет бюджета задан корректно
         if self.quality_priority not in allowed_quality_priorities:
             raise ValueError(
-                f'Unsupported quality_priotity: {self.quality_priority}'
+                f'Unsupported quality_priority: {self.quality_priority}'
                 f'Expected one of {sorted(allowed_quality_priorities)}'
             )
         # Минимальный контекст не может быть отрицательным

@@ -22,7 +22,7 @@
 - работать как через ADK, так и через OpenAI-compatible HTTP API
 - отдавать обычный ответ и `stream=True`
 
-## Покрытие ТЗ
+## ТЗ
 
 | Требование | Статус | Комментарий |
 | --- | --- | --- |
@@ -55,7 +55,7 @@
 
 `Client -> OpenAI-compatible API -> ADK root agent -> tool run_mws_assistant -> coordinator -> catalog/recommendation/estimation/reporting -> API response`
 
-![Архитектура сервиса](docs/mermaid-diagram.png)
+![Архитектура сервиса](docs/architecture.png)
 
 Роли слоев:
 - `mws_assistant/mws_catalog.py` — загрузка и нормализация каталога моделей и прайсов MWS
@@ -85,12 +85,13 @@
 │   ├── __init__.py
 │   └── agent.py
 ├── tests/
+│   ├── test_api.py
+│   ├── test_catalog_cache.py
 │   ├── test_estimation.py
 │   ├── test_recommendation.py
 │   └── test_validation.py
 ├── docs/
-│   ├── mts_task.md
-│   └── need_complete.md
+│   └── architecture.png
 └── .env_example
 ```
 
@@ -179,7 +180,6 @@ docker compose down
 
 Что не завернуто отдельно:
 - `adk web`
-- локальная генерация docs-диаграмм
 
 ## Доступные API endpoints
 
@@ -236,7 +236,7 @@ Invoke-RestMethod `
   -Body $body
 ```
 
-Сервер вернет `X-Session-Id`, который можно использовать для продолжения диалога
+Сервер вернет `X-Session-Id`, который можно использовать для продолжения того же диалога
 
 Пример ответа:
 
@@ -257,9 +257,9 @@ Invoke-RestMethod `
     }
   ],
   "usage": {
-    "prompt_tokens": 0,
-    "completion_tokens": 0,
-    "total_tokens": 0
+    "prompt_tokens": 1227,
+    "completion_tokens": 106,
+    "total_tokens": 1333
   }
 }
 ```
@@ -287,7 +287,7 @@ curl.exe -N -X POST "http://127.0.0.1:8080/v1/chat/completions" -H "Content-Type
 Ответ идет как SSE:
 - `chat.completion.chunk`
 - затем `data: [DONE]`
-- чанки отдаются из ADK event stream, а не через нарезку готовой строки
+- чанки отдаются из ADK event stream
 
 ## Как собирается итоговый ответ
 
@@ -297,7 +297,7 @@ curl.exe -N -X POST "http://127.0.0.1:8080/v1/chat/completions" -H "Content-Type
 - `calculations`
 - `limitations`
 
-То есть ассистент не просто пишет текст, а использует реальный вычисленный отчет
+То есть ассистент использует реальный вычисленный отчет
 
 ## Тесты
 
@@ -311,6 +311,9 @@ curl.exe -N -X POST "http://127.0.0.1:8080/v1/chat/completions" -H "Content-Type
 - 24h billing approximation
 - recommendation logic
 - входная pydantic validation
+- OpenAI-compatible API endpoints
+- server-side session behavior
+- SSE streaming response format
 
 ## Observability
 
@@ -327,8 +330,8 @@ curl.exe -N -X POST "http://127.0.0.1:8080/v1/chat/completions" -H "Content-Type
 
 - server-side session хранится в `InMemorySessionService`, то есть теряется после рестарта процесса
 - каталог кешируется только в рамках Python процесса и тоже теряется после рестарта
-- `stream=True` идет через ADK events и SSE, но без точного token usage accounting в ответе API
-- `usage` в OpenAI-compatible API пока stub и возвращается как нули
+- `usage` в обычном non-stream ответе заполняется из ADK usage metadata
+- для `stream=True` отдельный финальный usage block пока не добавлен
 - 24h billing rule смоделирован на дневной агрегации, а не на почасовом уровне
 - каталог MWS парсится по HTML, поэтому при серьезных изменениях в верстке MWS может потребоваться адаптация парсера
 
@@ -343,6 +346,5 @@ curl.exe -N -X POST "http://127.0.0.1:8080/v1/chat/completions" -H "Content-Type
 ## Что можно улучшить дальше
 
 - сделать persistent cache каталога между рестартами
-- улучшить `usage` и token accounting в API
+- добавить usage block и для `stream=True`
 - покрыть тестами API и parser
-- сделать README со скриншотами и демо-сценариями

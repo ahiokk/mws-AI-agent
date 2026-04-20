@@ -124,6 +124,27 @@ def extract_final_text_from_events(events: list) -> str:
     return "Assistant returned no text response."
 
 
+def extract_usage_from_events(events: list) -> ChatCompletionUsage:
+    # usage берем из последнего event где ADK уже отдал token metadata
+    for event in reversed(events):
+        usage = getattr(event, "usage_metadata", None)
+        if usage is None:
+            continue
+
+        return ChatCompletionUsage(
+            prompt_tokens=usage.prompt_token_count or 0,
+            completion_tokens=usage.candidates_token_count or 0,
+            total_tokens=usage.total_token_count or 0,
+        )
+
+    # Если backend usage не прислал, даем безопасный fallback
+    return ChatCompletionUsage(
+        prompt_tokens=0,
+        completion_tokens=0,
+        total_tokens=0,
+    )
+
+
 def build_stream_chunk(
     *,
     completion_id: str,
@@ -381,6 +402,7 @@ async def chat_completions(request: web.Request) -> web.StreamResponse | web.Res
             new_message=new_message,
         )
         assistant_text = extract_final_text_from_events(events)
+        usage = extract_usage_from_events(events)
     except Exception:
         LOGGER.exception("Failed to generate assistant response via ADK runner")
         return error_response(
@@ -401,11 +423,7 @@ async def chat_completions(request: web.Request) -> web.StreamResponse | web.Res
                 finish_reason="stop",
             )
         ],
-        usage=ChatCompletionUsage(
-            prompt_tokens=0,
-            completion_tokens=0,
-            total_tokens=0,
-        ),
+        usage=usage,
     )
 
     # session_id возвращаем клиенту чтобы он мог продолжить тот же диалог
