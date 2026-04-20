@@ -1,2 +1,7 @@
 .venv/
 __pycache__/
+.env
+.adk/
+.pytest_cache/
+*.pyc
+stream_request.json

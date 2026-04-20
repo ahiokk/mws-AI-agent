@@ -2,11 +2,15 @@ import asyncio
 import logging
 import re
 
+from copy import deepcopy
 from datetime import date
 from decimal import Decimal
+from time import monotonic
 
 import httpx
 from bs4 import BeautifulSoup
+
+from .observability import increment_counter, log_metrics_snapshot, measure_time
 
 
 LOGGER = logging.getLogger(__name__)
@@ -49,11 +53,28 @@ PROMO_PERIOD_RE = re.compile(
     re.IGNORECASE,
 )
 
+# Это process-level cache каталога
+# Он живет пока живет Python процесс
+CATALOG_CACHE_TTL_SECONDS = 300.0
+_CATALOG_CACHE: list[dict] | None = None
+_CATALOG_CACHE_UPDATED_AT: float | None = None
+
+# Нужен чтобы параллельные запросы не пошли одновременно обновлять каталог
+_CATALOG_CACHE_LOCK = asyncio.Lock()
+
 
 async def fetch_html(client: httpx.AsyncClient, url: str) -> str:
     LOGGER.info("Fetching HTML from %s", url)
-    response = await client.get(url)
-    response.raise_for_status()
+    increment_counter("mws_catalog_http_requests_total")
+    if url == MODELS_URL:
+        increment_counter("mws_catalog_model_page_requests_total")
+    elif url == PRICING_URL:
+        increment_counter("mws_catalog_pricing_page_requests_total")
+
+    with measure_time("mws_catalog_fetch_html_seconds"):
+        response = await client.get(url)
+        response.raise_for_status()
+
     LOGGER.info("Fetched %s with status %s", url, response.status_code)
     return response.text
 
@@ -169,17 +190,19 @@ def find_column_name(
 
 
 def find_optional_column_name(
-        row: dict,
-        include_text: str,
-        exclude_text: str | None = None,
+    row: dict,
+    include_text: str,
+    exclude_text: str | None = None,
 ) -> str | None:
     for column_name in row:
         if include_text not in column_name:
             continue
         if exclude_text and exclude_text in column_name:
-            return column_name
-        
+            continue
+        return column_name
+
     return None
+
 
 
 def parse_promo_period(
@@ -195,14 +218,14 @@ def parse_promo_period(
     
     reference_date = reference_date or date.today()
     start_day = int(match.group(1))
-    start_month = RUSSIAN_MONTHS[match.group(2).lower]
+    start_month = RUSSIAN_MONTHS[match.group(2).lower()]
     end_day = int(match.group(3))
     end_month = RUSSIAN_MONTHS[match.group(4).lower()]
 
     start_year = reference_date.year
     end_year = reference_date.year if end_month >= start_month else reference_date.year + 1
 
-    promo_start = date(start_year, start_month, start_year)
+    promo_start = date(start_year, start_month, start_day)
     promo_end = date(end_year, end_month, end_day)
 
     return promo_start, promo_end
@@ -244,34 +267,16 @@ def normalize_pricing_row(row: dict) -> dict:
     }
 
 
-def normalize_pricing_row(row: dict) -> dict:
-    promo_input_column = find_column_name(
-        row,
-        "Цена за 1000 входящих токенов, с НДС 22% в период акции",
-    )
-    promo_output_column = find_column_name(
-        row,
-        "Цена за 1000 исходящих токенов, с НДС 22% в период акции",
-    )
-    base_input_column = find_column_name(
-        row,
-        "Цена за 1000 входящих токенов, с НДС 22%",
-        exclude_text="в период акции",
-    )
-    base_output_column = find_column_name(
-        row,
-        "Цена за 1000 исходящих токенов, с НДС 22%",
-        exclude_text="в период акции",
-    )
-
+def normalize_model_row(row: dict) -> dict:
     return {
-        "name": row["Модель"],
-        "promo_input_price_per_1k": parse_price(row[promo_input_column]),
-        "promo_output_price_per_1k": parse_price(row[promo_output_column]),
-        "base_input_price_per_1k": parse_price(row[base_input_column]),
-        "base_output_price_per_1k": parse_price(row[base_output_column]),
-        "billing_unit_tokens": parse_int(row["Отпускная единица, в токенах"]),
+        "name": row["Параметр"],
+        "developer": row["Разработчик"],
+        "input_modalities": parse_modalities(row["Формат ввода"]),
+        "output_modality": row["Формат вывода"],
+        "context_k_tokens": parse_int(row["Контекст, в тысячах токенов"]),
+        "size_b_params": parse_float(row["Размер модели, в млрд. параметров"]),
     }
+
 
 
 def extract_models(html: str) -> list[dict]:
@@ -320,19 +325,68 @@ def merge_models_and_pricing(models: list[dict], pricing: list[dict]) -> list[di
     return result
 
 
-async def get_catalog() -> list[dict]:
-    LOGGER.info('Loading full MWS catalog')
+def is_catalog_cache_fresh(now: float | None = None) -> bool:
+    if _CATALOG_CACHE is None or _CATALOG_CACHE_UPDATED_AT is None:
+        return False
 
-    async with httpx.AsyncClient(timeout=20.0, follow_redirects=True) as client:
-        models_html = await fetch_html(client, MODELS_URL)
-        pricing_html = await fetch_html(client, PRICING_URL)
+    now = now or monotonic()
+    return (now - _CATALOG_CACHE_UPDATED_AT) < CATALOG_CACHE_TTL_SECONDS
 
-    models = extract_models(models_html)
-    pricing = extract_pricing(pricing_html)
-    merged_catalog = merge_models_and_pricing(models, pricing)
 
-    LOGGER.info('Loaded full catalog with %s records', len(merged_catalog))
+def clear_catalog_cache() -> None:
+    global _CATALOG_CACHE, _CATALOG_CACHE_UPDATED_AT
+
+    # Это удобно для тестов и ручного принудительного refresh
+    _CATALOG_CACHE = None
+    _CATALOG_CACHE_UPDATED_AT = None
+    LOGGER.info("Catalog cache cleared")
+
+
+async def load_catalog_from_mws() -> list[dict]:
+    LOGGER.info("Refreshing full MWS catalog from docs")
+    with measure_time("mws_catalog_get_catalog_seconds"):
+        async with httpx.AsyncClient(timeout=20.0, follow_redirects=True) as client:
+            models_html = await fetch_html(client, MODELS_URL)
+            pricing_html = await fetch_html(client, PRICING_URL)
+
+        models = extract_models(models_html)
+        pricing = extract_pricing(pricing_html)
+        merged_catalog = merge_models_and_pricing(models, pricing)
+
+    LOGGER.info("Loaded full catalog with %s records", len(merged_catalog))
+    log_metrics_snapshot("mws_catalog_metrics")
     return merged_catalog
+
+
+async def get_catalog(force_refresh: bool = False) -> list[dict]:
+    global _CATALOG_CACHE, _CATALOG_CACHE_UPDATED_AT
+
+    # Сначала пробуем быстрый путь без блокировки
+    if not force_refresh and is_catalog_cache_fresh():
+        increment_counter("mws_catalog_cache_hits_total")
+        LOGGER.info("Returning catalog from process cache")
+        return deepcopy(_CATALOG_CACHE)
+
+    # Если кэш не свежий, заходим под lock
+    async with _CATALOG_CACHE_LOCK:
+        # Пока ждали lock, кто-то другой мог уже обновить кэш
+        if not force_refresh and is_catalog_cache_fresh():
+            increment_counter("mws_catalog_cache_hits_total")
+            LOGGER.info("Returning catalog from process cache after lock")
+            return deepcopy(_CATALOG_CACHE)
+
+        increment_counter("mws_catalog_cache_misses_total")
+        increment_counter("mws_catalog_cache_refreshes_total")
+
+        fresh_catalog = await load_catalog_from_mws()
+        _CATALOG_CACHE = deepcopy(fresh_catalog)
+        _CATALOG_CACHE_UPDATED_AT = monotonic()
+
+        LOGGER.info(
+            "Catalog cache refreshed with %s records",
+            len(fresh_catalog),
+        )
+        return deepcopy(fresh_catalog)
 
 
 async def main() -> None:

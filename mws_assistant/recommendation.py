@@ -25,7 +25,7 @@ class RecommendationRequest:
         # Проверяем, что use_case в доступном сценарии
         if self.use_case not in allowed_use_cases:
             raise ValueError(
-                f'Unsupported use_case: {self.use_cases}'
+                f'Unsupported use_case: {self.use_case}'
                 f'Expected one of {sorted(allowed_use_cases)}'
             )
         
@@ -43,6 +43,12 @@ class RecommendationRequest:
         if self.max_recommendations <= 0:
             raise ValueError('max_recommendations must be > 0')
         
+        #...
+        if self.budget_priority not in allowed_budget_priorities:
+            raise ValueError(
+                f'Unsupported budget_priority: {self.budget_priority}'
+                f'Expected one of {sorted(allowed_budget_priorities)}'
+            )
 
 # Проверяем, эмбеддер это, или нет.
 def is_embedding_model(model: dict) -> bool:
@@ -221,6 +227,8 @@ def get_budget_weight(request: RecommendationRequest) -> float:
     if request.budget_priority == 'high':
         return 3.0
 
+    raise ValueError(f"Unsupported budget_priority: {request.budget_priority}")
+
 
 def score_model(
         model: dict,
@@ -279,9 +287,11 @@ def recommend_models(
         recommendations.append(
             {
                 **model,
-                'score': score_model(model, request, price_scores)
+                "score": score_model(model, request, price_scores),
+                "reasons": build_reasons(model, request),
             }
         )
+
     
     return recommendations
 

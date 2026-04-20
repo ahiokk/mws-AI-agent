@@ -1,0 +1,9 @@
+aiohttp==3.13.3
+beautifulsoup4==4.14.3
+httpx==0.28.1
+lxml==6.0.4
+python-dotenv==1.0.1
+pydantic==2.12.5
+pytest==9.0.3
+google-adk==1.31.0
+litellm==1.83.10
