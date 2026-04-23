@@ -11,8 +11,11 @@ from mws_assistant.coordinator import run_assistant_from_payload
 
 LOGGER = logging.getLogger(__name__)
 
-
+# Это просто вспомогательная функция для красивого логирования.
 def format_tool_call_log(
+    # Чтобы в логах было видно:
+    # с какими параметрами вызвали tool,
+    # что именно агент передал внутрь.
     use_case: str,
     needs_image_inputs: bool,
     min_context_k_tokens: int | None,
@@ -49,6 +52,10 @@ def format_tool_call_log(
     )
 
 
+# Тоже только для логов.
+# Она показывает уже нормализованные данные перед вызовом координатора:
+# request_data — что относится к задаче и предпочтениям
+# scenario_data — что относится к нагрузке и стоимости
 def format_payload_log(request_data: dict, scenario_data: dict) -> str:
     return "\n".join(
         [
@@ -60,20 +67,20 @@ def format_payload_log(request_data: dict, scenario_data: dict) -> str:
 
 
 async def run_mws_assistant(
-    use_case: str,
-    needs_image_inputs: bool = False,
-    min_context_k_tokens: int | None = None,
-    quality_priority: str = "medium",
-    budget_priority: str = "balanced",
-    max_recommendations: int = 3,
-    avg_input_tokens_per_request: int = 0,
-    avg_output_tokens_per_request: int = 0,
-    requests_per_day: int = 0,
-    period_days: int = 30,
-    budget_rub: str | None = None,
-    price_mode: str = "auto",
-    output_tokens_source: str = "user",
-    output_tokens_assumption_confirmed: bool = False,
+    use_case: str,                                      #Тип сценария.
+    needs_image_inputs: bool = False,                   #Нужна ли модели работа с изображениями.
+    min_context_k_tokens: int | None = None,            #Минимальный необходимый контекст в тысячах токенов.
+    quality_priority: str = "medium",                   #Приоритет качества.
+    budget_priority: str = "balanced",                  #Насколько важно экономить бюджет
+    max_recommendations: int = 3,                       #Сколько максимум моделей рекомендовать.
+    avg_input_tokens_per_request: int = 0,              #Среднее число входных токенов на один запрос.
+    avg_output_tokens_per_request: int = 0,             #Среднее число выходных токенов на один запрос.
+    requests_per_day: int = 0,                          #Сколько запросов в день ожидается.
+    period_days: int = 30,                              #На сколько дней считать стоимость.
+    budget_rub: str | None = None,                      #Бюджет в рублях.
+    price_mode: str = "auto",                           #Какую цену использовать.
+    output_tokens_source: str = "user",                 #Откуда взялось число output tokens.
+    output_tokens_assumption_confirmed: bool = False,   #Подтвердил ли пользователь допущение по output tokens.
 ) -> dict:
     """
     Selects suitable MWS GPT models and estimates usage cost.
@@ -130,6 +137,11 @@ async def run_mws_assistant(
         ),
     )
 
+    #Почему так:
+
+    # у embedding-сценария обычно нет обычного текстового output как у чата,
+    # поэтому output tokens не спрашиваются,
+    # им принудительно ставят 0.
     if use_case == "embedding" and avg_output_tokens_per_request <= 0:
         avg_output_tokens_per_request = 0
         output_tokens_source = "user"
@@ -138,6 +150,7 @@ async def run_mws_assistant(
             "Embedding shortcut applied: avg_output_tokens_per_request set to 0"
         )
 
+    # Проверка, каких данных не хватает
     missing_fields = []
     if not use_case:
         missing_fields.append("use_case")
@@ -148,12 +161,13 @@ async def run_mws_assistant(
     if use_case != "embedding" and avg_output_tokens_per_request <= 0:
         missing_fields.append("avg_output_tokens_per_request")
 
+    #Проверка output_tokens_source
     if missing_fields:
         LOGGER.warning(
             "Tool was called with incomplete or unclear inputs: %s",
             ", ".join(missing_fields),
         )
-
+    #Запрет на неподтверждённые допущения
     if output_tokens_source not in {"user", "assumption"}:
         raise ValueError(
             f"Unsupported output_tokens_source: {output_tokens_source}"
@@ -166,7 +180,19 @@ async def run_mws_assistant(
         raise ValueError(
             "Output token assumption must be explicitly confirmed by the user before final estimation."
         )
+    
+    #Формирование request_data
+    '''
+    Здесь собираются данные про сам запрос и предпочтения.
 
+    То есть:
+
+    что за кейс,
+    нужен ли image input,
+    какой нужен контекст,
+    приоритет цены/качества,
+    сколько рекомендаций вернуть.
+    '''
     request_data = {
         "use_case": use_case,
         "needs_image_inputs": needs_image_inputs,
@@ -175,7 +201,8 @@ async def run_mws_assistant(
         "budget_priority": budget_priority,
         "max_recommendations": max_recommendations,
     }
-
+    #Формирование scenario_data
+    # А это уже данные про нагрузку и расчёт стоимости.
     scenario_data = {
         "avg_input_tokens_per_request": avg_input_tokens_per_request,
         "avg_output_tokens_per_request": avg_output_tokens_per_request,
@@ -184,12 +211,17 @@ async def run_mws_assistant(
         "price_mode": price_mode,
     }
 
+    # Добавление бюджета
+    # Если бюджет задан, он переводится в Decimal.
     if budget_rub is not None:
         scenario_data["budget_rub"] = Decimal(budget_rub)
 
+    # Логирование итогового payload
     LOGGER.info("\n%s", format_payload_log(request_data, scenario_data))
 
+    # Вызов координатора
     report = await run_assistant_from_payload(request_data, scenario_data)
+    # Логирование результата
     LOGGER.info(
         "Tool result summary: recommended_models=%s calculation_rows=%s",
         len(report.get("recommended_models", [])),
@@ -199,15 +231,35 @@ async def run_mws_assistant(
         "Recommended model names: %s",
         [item.get("name") for item in report.get("recommended_models", [])],
     )
+    # Возврат результата
     return report
 
 
+''' 
+Что именно ему приказано
+1. Не быть обычным чат-ботом на первом сообщении
+2. Задавать минимум вопросов
+3. Не делать финальный расчёт без input/output tokens
+4. Для embedding не спрашивать output tokens
+5. Если пользователь не знает output tokens — предложить допущение
+6. Продолжать только после явного согласия
+7. Не раскрывать внутренние служебные поля
+8. Не выдумывать модели, цены и лимиты
+9. После tool result отвечать только по нему
+10. Если пользователь просит более дешёвый вариант — перевызвать tool
+11. Не называть моделей, которых нет в результате
+12. Если ничего не влезает в бюджет — сказать об этом прямо
+13. Правила маппинга use_case
+14. Допустимые значения
+'''
+# Это создание самого агента.
 root_agent = Agent(
-    name="mws_selection_agent",
+    name="mws_selection_agent", # Имя агента
     model=LiteLlm(
-        model=f"openai/{os.getenv('MODEL_NAME', 'qwen3-235b-instruct')}"
+        model=f"openai/{os.getenv('MODEL_NAME', 'qwen3-235b-instruct')}"    # имя модели берётся из переменной окружения MODEL_NAME
     ),
-    instruction=(
+    #Это огромный системный промпт агента.
+    instruction=(   
         "You are a specialized MWS GPT Model Hub assistant. "
         "Your role is to help users choose suitable MWS models, compare options, "
         "estimate costs, and explain tradeoffs and limitations. "
@@ -276,10 +328,11 @@ root_agent = Agent(
         "Valid budget_priority values: low, balanced, high. "
         "Valid price_mode values: auto, base, promo."
     ),
-
+    # Это значит, что у агента есть один доступный tool:
     tools=[run_mws_assistant],
 )
-
+# Это уже финальная сборка ADK-приложения.
+# Именно этот app потом импортируется в api_models:
 app = App(
     name='mws_adk_app',
     root_agent=root_agent,
